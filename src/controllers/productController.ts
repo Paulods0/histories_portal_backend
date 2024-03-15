@@ -76,7 +76,23 @@ const updateProduct = async (req: Request, res: Response) => {
     res.status(500).json({ err: "Erro no servidor: " + error })
   }
 }
-const deleteProduct = async (req: Request, res: Response) => {}
+
+const deleteProduct = async (req: Request, res: Response) => {
+  const { id } = req.params
+  if (!Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "O id provido não é um id válido." })
+  }
+  try {
+    const product = await ProductModel.findById(id)
+    if (!product) {
+      return res.status(400).json({ message: "Este produto não existe." })
+    }
+    await ProductModel.deleteOne({ _id: product._id })
+    res.status(200).json({ message: "O produto foi deletado com sucesso" })
+  } catch (error) {
+    res.status(500).json({ err: "Erro no servidor: " + error })
+  }
+}
 
 export {
   createProduct,
