@@ -10,7 +10,7 @@ import {
 const route = Router()
 
 route.post("/", createProductCategory)
-route.get("/prod-categories", getAllProductCategories)
+route.get("/categories", getAllProductCategories)
 route.get("/:id", getProductCategoryById)
 route.put("/:id", updateProductCategory)
 route.delete("/:id", deleteProductCategory)

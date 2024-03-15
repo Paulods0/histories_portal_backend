@@ -3,7 +3,7 @@ import { ProductModel } from "../models/productModel"
 import { Types } from "mongoose"
 
 const createProduct = async (req: Request, res: Response) => {
-  const { name, category } = req.body
+  const { name, category, price } = req.body
   if (!name) {
     return res.status(400).json({ message: "O nome do produto é obrigatório!" })
   }
@@ -11,7 +11,7 @@ const createProduct = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "A categoria é obrigatória!" })
   }
   try {
-    const product = new ProductModel({ name, category })
+    const product = new ProductModel({ name, category, price })
     const data = await product.save()
     res
       .status(201)
@@ -50,7 +50,7 @@ const getProductById = async (req: Request, res: Response) => {
 }
 const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params
-  const { name, category } = req.body
+  const { name, category, price } = req.body
   try {
     if (!Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "O id provido não é válido" })
@@ -60,11 +60,12 @@ const updateProduct = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "O produto não foi encontrado!" })
     }
 
-    const updatedProduct = await ProductModel.updateOne(
+    const updatedProduct = await ProductModel.findOneAndUpdate(
       { _id: id },
       {
         name: name ? name : product!!.name,
         category: category ? category : product!!.category,
+        price: price ? price : product!!.price,
       },
       { new: true }
     )
