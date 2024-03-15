@@ -31,7 +31,6 @@ const getAllProducts = async (req: Request, res: Response) => {
     res.status(500).json({ err: "Erro no servidor: " + error })
   }
 }
-
 const getProductById = async (req: Request, res: Response) => {
   const { id } = req.params
   try {
@@ -49,7 +48,34 @@ const getProductById = async (req: Request, res: Response) => {
     res.status(500).json({ err: "Erro no servidor: " + error })
   }
 }
-const updateProduct = async (req: Request, res: Response) => {}
+const updateProduct = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { name, category } = req.body
+  try {
+    if (!Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "O id provido não é válido" })
+    }
+    const product = await ProductModel.findById(id)
+    if (!product) {
+      return res.status(404).json({ message: "O produto não foi encontrado!" })
+    }
+
+    const updatedProduct = await ProductModel.updateOne(
+      { _id: id },
+      {
+        name: name ? name : product!!.name,
+        category: category ? category : product!!.category,
+      },
+      { new: true }
+    )
+
+    res
+      .status(200)
+      .json({ message: "Produto atualizado com sucesso!", updatedProduct })
+  } catch (error) {
+    res.status(500).json({ err: "Erro no servidor: " + error })
+  }
+}
 const deleteProduct = async (req: Request, res: Response) => {}
 
 export {
