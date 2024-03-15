@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { productCategoryModel } from "../models/productCategoryModel"
+import { Types } from "mongoose"
 
 const createProductCategory = async (req: Request, res: Response) => {
   const { name } = req.body
@@ -34,7 +35,16 @@ const getAllProductCategories = async (req: Request, res: Response) => {
   }
 }
 const getProductCategoryById = async (req: Request, res: Response) => {
+  const { id } = req.params
+  if (!Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "O id provido não é um id válido." })
+  }
   try {
+    const category = await productCategoryModel.findById(id)
+    if (!category) {
+      return res.status(404).json({ message: "A categoria não existe" })
+    }
+    return res.status(200).json(category)
   } catch (error) {
     res.status(500).json({
       message: "Erro no servidor: " + error,
