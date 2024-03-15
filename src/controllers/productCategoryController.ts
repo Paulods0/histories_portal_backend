@@ -23,7 +23,9 @@ const createProductCategory = async (req: Request, res: Response) => {
 }
 const getAllProductCategories = async (req: Request, res: Response) => {
   try {
-    const productCategories = await productCategoryModel.find()
+    const productCategories = await productCategoryModel
+      .find()
+      .populate("ProductCategory")
     if (!productCategoryModel || productCategories.length === 0) {
       return res.status(404).json({ message: "Não há nenhuma categoria" })
     }
@@ -40,7 +42,9 @@ const getProductCategoryById = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "O id provido não é um id válido." })
   }
   try {
-    const category = await productCategoryModel.findById(id)
+    const category = await productCategoryModel
+      .findById(id)
+      .populate("ProductCategory")
     if (!category) {
       return res.status(404).json({ message: "A categoria não existe" })
     }
