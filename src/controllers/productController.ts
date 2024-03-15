@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { ProductModel } from "../models/productModel"
+import { Types } from "mongoose"
 
 const createProduct = async (req: Request, res: Response) => {
   const { name, category } = req.body
@@ -19,7 +20,6 @@ const createProduct = async (req: Request, res: Response) => {
     res.status(500).json({ err: "Erro no servidor: " + error })
   }
 }
-
 const getAllProducts = async (req: Request, res: Response) => {
   try {
     const products = await ProductModel.find()
@@ -31,7 +31,24 @@ const getAllProducts = async (req: Request, res: Response) => {
     res.status(500).json({ err: "Erro no servidor: " + error })
   }
 }
-const getProductById = async (req: Request, res: Response) => {}
+
+const getProductById = async (req: Request, res: Response) => {
+  const { id } = req.params
+  try {
+    if (!Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "O id provido não é válido" })
+    }
+    const product = await ProductModel.findById(id)
+    if (!product) {
+      return res
+        .status(404)
+        .json({ message: "O produto solicitado não existe!" })
+    }
+    res.status(200).json(product)
+  } catch (error) {
+    res.status(500).json({ err: "Erro no servidor: " + error })
+  }
+}
 const updateProduct = async (req: Request, res: Response) => {}
 const deleteProduct = async (req: Request, res: Response) => {}
 
