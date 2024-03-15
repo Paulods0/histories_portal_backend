@@ -52,7 +52,25 @@ const getProductCategoryById = async (req: Request, res: Response) => {
   }
 }
 const updateProductCategory = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { name } = req.body
+  if (!Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "O id provido não é um id válido." })
+  }
   try {
+    const category = await productCategoryModel.findById(id)
+    if (!category) {
+      return res.status(404).json({ message: "A categoria não existe." })
+    }
+    const updatedCategory = await productCategoryModel.findOneAndUpdate(
+      { _id: id },
+      { name: name ? name : category.name },
+      { new: true }
+    )
+    res.status(200).json({
+      message: "A categoria foi atualizada com sucesso",
+      updatedCategory,
+    })
   } catch (error) {
     res.status(500).json({
       message: "Erro no servidor: " + error,
