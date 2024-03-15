@@ -10,9 +10,9 @@ import {
 const route = Router()
 
 route.post("/", createProduct)
-route.get("/", getAllProducts)
-route.get("/", getProductById)
-route.put("/", updateProduct)
-route.delete("/", deleteProduct)
+route.get("/products", getAllProducts)
+route.get("/:id", getProductById)
+route.put("/:id", updateProduct)
+route.delete("/:id", deleteProduct)
 
 export = route

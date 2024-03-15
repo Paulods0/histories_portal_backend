@@ -11,8 +11,8 @@ const route = Router()
 
 route.post("/", createProductCategory)
 route.get("/prod-categories", getAllProductCategories)
-route.get("/prod-category/:id", getProductCategoryById)
-route.put("/prod-category/:id", updateProductCategory)
-route.delete("/prod-category/:id", deleteProductCategory)
+route.get("/:id", getProductCategoryById)
+route.put("/:id", updateProductCategory)
+route.delete("/:id", deleteProductCategory)
 
 export = route

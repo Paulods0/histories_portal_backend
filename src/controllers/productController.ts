@@ -22,8 +22,8 @@ const createProduct = async (req: Request, res: Response) => {
 }
 const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const products = await ProductModel.find()
-    if (!products || products.length < 1) {
+    const products = await ProductModel.find().populate("category")
+    if (!products || products.length === 0) {
       res.status(404).json({ message: "Não há nenhum produto criado." })
     }
     res.status(200).json(products)
@@ -37,7 +37,7 @@ const getProductById = async (req: Request, res: Response) => {
     if (!Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "O id provido não é válido" })
     }
-    const product = await ProductModel.findById(id)
+    const product = await ProductModel.findById(id).populate("category")
     if (!product) {
       return res
         .status(404)
