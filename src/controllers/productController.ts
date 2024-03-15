@@ -19,10 +19,21 @@ const createProduct = async (req: Request, res: Response) => {
     res.status(500).json({ err: "Erro no servidor: " + error })
   }
 }
-const getAllProducts = (req: Request, res: Response) => {}
-const getProductById = (req: Request, res: Response) => {}
-const updateProduct = (req: Request, res: Response) => {}
-const deleteProduct = (req: Request, res: Response) => {}
+
+const getAllProducts = async (req: Request, res: Response) => {
+  try {
+    const products = await ProductModel.find()
+    if (!products || products.length < 1) {
+      res.status(404).json({ message: "Não há nenhum produto criado." })
+    }
+    res.status(200).json(products)
+  } catch (error) {
+    res.status(500).json({ err: "Erro no servidor: " + error })
+  }
+}
+const getProductById = async (req: Request, res: Response) => {}
+const updateProduct = async (req: Request, res: Response) => {}
+const deleteProduct = async (req: Request, res: Response) => {}
 
 export {
   createProduct,
