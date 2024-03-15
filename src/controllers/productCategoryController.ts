@@ -14,16 +14,19 @@ const createProductCategory = async (req: Request, res: Response) => {
     res
       .status(201)
       .json({ message: "Categoria criada com sucesso", data: productCategory })
-
   } catch (error) {
     res.status(500).json({
       message: "Erro no servidor: " + error,
     })
   }
 }
-
 const getAllProductCategories = async (req: Request, res: Response) => {
   try {
+    const productCategories = await productCategoryModel.find()
+    if (!productCategoryModel || productCategories.length === 0) {
+      return res.status(404).json({ message: "Não há nenhuma categoria" })
+    }
+    res.status(200).json(productCategories)
   } catch (error) {
     res.status(500).json({
       message: "Erro no servidor: " + error,
