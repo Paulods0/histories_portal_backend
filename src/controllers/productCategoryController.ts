@@ -78,7 +78,17 @@ const updateProductCategory = async (req: Request, res: Response) => {
   }
 }
 const deleteProductCategory = async (req: Request, res: Response) => {
+  const { id } = req.params
+  if (!Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "O id provido não é um id válido" })
+  }
   try {
+    const category = await productCategoryModel.findById(id)
+    if (!category) {
+      return res.status(404).json({ message: "A categoria não exite" })
+    }
+    await category.deleteOne()
+    res.status(200).json({ message: "A categoria foi deletada com sucesso" })
   } catch (error) {
     res.status(500).json({
       message: "Erro no servidor: " + error,
