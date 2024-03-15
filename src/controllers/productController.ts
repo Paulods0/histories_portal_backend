@@ -76,7 +76,6 @@ const updateProduct = async (req: Request, res: Response) => {
     res.status(500).json({ err: "Erro no servidor: " + error })
   }
 }
-
 const deleteProduct = async (req: Request, res: Response) => {
   const { id } = req.params
   if (!Types.ObjectId.isValid(id)) {
