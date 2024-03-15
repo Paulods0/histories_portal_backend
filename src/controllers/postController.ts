@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { IPostDB, PostModel } from "../models/postModel"
 
 // CREATE POST
-export const createPost = async (req: Request, res: Response) => {
+const createPost = async (req: Request, res: Response) => {
   // const userId = req.headers
   const { title, subtitle, category, content, isHighlighted, mainImage } =
     req.body
@@ -36,9 +36,8 @@ export const createPost = async (req: Request, res: Response) => {
     res.status(404).json({ error, err: "Fail while creating the post" })
   }
 }
-
 // GET ALL POSTS
-export const getAllPosts = async (req: Request, res: Response) => {
+const getAllPosts = async (req: Request, res: Response) => {
   const postsPerPage = 3
   const { page } = req.query
   const skipp = postsPerPage * Number(page)
@@ -57,7 +56,7 @@ export const getAllPosts = async (req: Request, res: Response) => {
       .json({ err: "Erro no servidor, por favor tente novamente!" })
   }
 }
-export const getAllPostsPagination = async (req: Request, res: Response) => {
+const getAllPostsPagination = async (req: Request, res: Response) => {
   const postsPerPage = 3
   const { page } = req.query
   const skipp = postsPerPage * Number(page)
@@ -78,9 +77,8 @@ export const getAllPostsPagination = async (req: Request, res: Response) => {
       .json({ err: "Erro no servidor, por favor tente novamente!" })
   }
 }
-
 // GET SINGLE POST
-export const getSinglePost = async (req: Request, res: Response) => {
+const getSinglePost = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
     const post = await PostModel.findById({ _id: id }).populate("category")
@@ -98,7 +96,7 @@ export const getSinglePost = async (req: Request, res: Response) => {
   }
 }
 // GET SINGLE POST
-export const getHighlightedPost = async (req: Request, res: Response) => {
+const getHighlightedPost = async (req: Request, res: Response) => {
   try {
     const post = await PostModel.find(req.query)
       .sort({ createdAt: -1 })
@@ -113,9 +111,8 @@ export const getHighlightedPost = async (req: Request, res: Response) => {
       .json({ err: "Erro no servidor, por favor tente novamente!" })
   }
 }
-
 //GET POST BY CATEGORY
-export const getAllPostsByCategory = async (req: Request, res: Response) => {
+const getAllPostsByCategory = async (req: Request, res: Response) => {
   try {
     const posts = await PostModel.find(req.query)
       .sort({ createdAt: -1 })
@@ -132,11 +129,7 @@ export const getAllPostsByCategory = async (req: Request, res: Response) => {
     })
   }
 }
-
-{
-  /**GET HIGHLIGHTED POSTS */
-}
-export const getHighlightedPosts = async (req: Request, res: Response) => {
+const getHighlightedPosts = async (req: Request, res: Response) => {
   try {
     const { highlighted } = req.query
     const highlightedPosts = await PostModel.find()
@@ -147,9 +140,8 @@ export const getHighlightedPosts = async (req: Request, res: Response) => {
     res.status(500).json({ err: error })
   }
 }
-
 // DELETE POST
-export const deletePost = async (req: Request, res: Response) => {
+const deletePost = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
     const post = await PostModel.findById({ _id: id })
@@ -164,8 +156,7 @@ export const deletePost = async (req: Request, res: Response) => {
     res.status(404).json({ err: "Erro no servidor ao tentar apagar o post" })
   }
 }
-
-export const updatePost = async (req: Request, res: Response) => {
+const updatePost = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
     const { title, subtitle, content, mainImage, category, isHighlighted } =
@@ -192,4 +183,16 @@ export const updatePost = async (req: Request, res: Response) => {
       .status(404)
       .json({ err: "Erro no servidor ao tentar atualizar o post!" })
   }
+}
+
+export {
+  createPost,
+  getAllPosts,
+  deletePost,
+  getAllPostsByCategory,
+  getAllPostsPagination,
+  getHighlightedPost,
+  getSinglePost,
+  getHighlightedPosts,
+  updatePost,
 }
