@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose"
 
 interface IProductSchema {
+  image: string
   name: string
   price: string
   category: Schema.Types.ObjectId
@@ -8,6 +9,7 @@ interface IProductSchema {
 
 const productSchema = new mongoose.Schema<IProductSchema>(
   {
+    image: { type: String, required: true },
     name: {
       type: String,
       required: true,

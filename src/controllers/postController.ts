@@ -168,12 +168,12 @@ const updatePost = async (req: Request, res: Response) => {
     const newPost = await PostModel.findOneAndUpdate(
       { _id: id },
       {
-        title: title ? title : postExists.title,
-        subtitle: subtitle ? subtitle : postExists.subtitle,
-        mainImage: mainImage ? mainImage : postExists.mainImage,
-        content: content ? content : postExists.content,
-        isHighlighted: isHighlighted ? isHighlighted : postExists.isHighlighted,
-        category: category ? category : postExists.category,
+        title: title,
+        subtitle: subtitle,
+        mainImage: mainImage,
+        content: content,
+        isHighlighted: isHighlighted,
+        category: category,
       },
       { new: true }
     )
@@ -181,7 +181,7 @@ const updatePost = async (req: Request, res: Response) => {
   } catch (error) {
     res
       .status(404)
-      .json({ err: "Erro no servidor ao tentar atualizar o post!" })
+      .json({ err: "Erro no servidor ao tentar atualizar o post!: " + error })
   }
 }
 

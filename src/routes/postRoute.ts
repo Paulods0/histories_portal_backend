@@ -19,7 +19,7 @@ route.get("/posts", getAllPostsPagination)
 route.get("/", getAllPostsByCategory)
 route.get("/posts", getHighlightedPosts)
 route.get("/get/:id", getSinglePost)
-route.delete("/:id", deletePost)
+route.delete("/delete/:id", deletePost)
 route.put("/:id", updatePost)
 
 export = route

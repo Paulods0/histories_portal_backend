@@ -3,26 +3,31 @@ import { ProductModel } from "../models/productModel"
 import { Types } from "mongoose"
 
 const createProduct = async (req: Request, res: Response) => {
-  const { name, category, price } = req.body
-  if (!name) {
-    return res.status(400).json({ message: "O nome do produto é obrigatório!" })
-  }
-  if (!category) {
-    return res.status(400).json({ message: "A categoria é obrigatória!" })
-  }
   try {
-    const product = new ProductModel({ name, category, price })
-    const data = await product.save()
-    res
-      .status(201)
-      .json({ message: "O produto foi criado com sucesso ", data: data })
+    const { name, category, price, image } = req.body
+    if (!name || !category || !price || !image) {
+      return res
+        .status(400)
+        .json({ message: "Preencha todos os campos obrigatórios!" })
+    }
+    const product = new ProductModel({
+      name: name,
+      category: category,
+      price: price,
+      image: image,
+    })
+    await product.save()
+    res.status(201).json({ message: "O produto foi criado com sucesso " })
   } catch (error) {
-    res.status(500).json({ err: "Erro no servidor: " + error })
+    res.status(500).send({ erro: "Erro no servidor: " + error })
   }
 }
+
 const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const products = await ProductModel.find().populate("category")
+    const products = await ProductModel.find()
+      .populate("category")
+      .sort({ createdAt: -1 })
     if (!products || products.length === 0) {
       res.status(404).json({ message: "Não há nenhum produto criado." })
     }
