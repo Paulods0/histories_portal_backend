@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { IPostDB, PostModel } from "../models/postModel"
+import { Schema } from "mongoose"
 
 // CREATE POST
 const createPost = async (req: Request, res: Response) => {
@@ -114,14 +115,21 @@ const getHighlightedPost = async (req: Request, res: Response) => {
 //GET POST BY CATEGORY
 const getAllPostsByCategory = async (req: Request, res: Response) => {
   try {
-    const posts = await PostModel.find(req.query)
-      .sort({ createdAt: -1 })
-      .populate("category")
-    if (!posts) {
+    const posts = await PostModel.find({ category: req.params.category })
+    const filteredPosts: {
+      title: string
+      subtitle: string
+      mainImage: string
+      content: string
+      author?: Schema.Types.ObjectId
+      isHighlighted: boolean
+      category: Schema.Types.ObjectId
+    }[] = posts.filter((post) => post.category !== null)
+
+    if (!filteredPosts) {
       return res.status(404).json({ message: "O post não foi encontrado!" })
     }
-
-    res.status(200).json(req.query)
+    res.status(200).json(filteredPosts)
   } catch (error) {
     res.status(500).json({
       err: error,
