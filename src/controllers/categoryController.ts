@@ -16,21 +16,23 @@ export const createCategory = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: "A categoria/tópico foi criado com sucesso!", category })
   } catch (error) {
-    res.status(400).json({ error, err: "Erro no servidor ao tentar criar uma categoria/tópico" })
+    res.status(400).json({
+      error,
+      err: "Erro no servidor ao tentar criar uma categoria/tópico",
+    })
   }
 }
 //GET ALL CATEGORY
 export const getAllCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await CategoryModel.find().sort({ createdAt: -1 })
+    const categories = await CategoryModel.find()
+
     res.status(200).json(categories)
   } catch (error) {
-    res
-      .status(400)
-      .json({
-        error,
-        err: "Erro no servidor ao tentar obter a categoria/tópico",
-      })
+    res.status(400).json({
+      error,
+      err: "Erro no servidor ao tentar obter a categoria/tópico",
+    })
   }
 }
 //GET SINGLE CATEGORY

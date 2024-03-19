@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose"
+import mongoose, { Schema, Types } from "mongoose"
 
 interface IUser {
   firstname: string
@@ -6,6 +6,7 @@ interface IUser {
   email: string
   password: string
   image?: string
+  posts: Types.ObjectId[]
 }
 
 const userSchema = new Schema<IUser>(
@@ -15,6 +16,7 @@ const userSchema = new Schema<IUser>(
     email: { type: String, required: true },
     image: { type: String },
     password: { type: String, required: true },
+    posts: [{ type: Types.ObjectId, ref: "Post" }],
   },
   { timestamps: true }
 )

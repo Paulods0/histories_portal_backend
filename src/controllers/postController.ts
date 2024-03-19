@@ -1,12 +1,20 @@
 import { Request, Response } from "express"
 import { IPostDB, PostModel } from "../models/postModel"
-import { Schema } from "mongoose"
+import { Schema, Types } from "mongoose"
+import { UserModel } from "../models/userModel"
 
 // CREATE POST
 const createPost = async (req: Request, res: Response) => {
   // const userId = req.headers
-  const { title, subtitle, category, content, isHighlighted, mainImage } =
-    req.body
+  const {
+    title,
+    subtitle,
+    category,
+    content,
+    isHighlighted,
+    mainImage,
+    author_id,
+  } = req.body
   if (!title) {
     return res.status(400).json({ message: "O título é obrigatório" })
   }
@@ -30,8 +38,13 @@ const createPost = async (req: Request, res: Response) => {
       content,
       isHighlighted,
       mainImage,
+      author: author_id,
     })
+    const user = await UserModel.findById(author_id)
     await post.save()
+
+    user?.posts.push(post._id)
+    await user?.save()
     res.status(200).json({ message: "O post foi criado", data: post })
   } catch (error) {
     res.status(404).json({ error, err: "Fail while creating the post" })
@@ -46,6 +59,7 @@ const getAllPosts = async (req: Request, res: Response) => {
     const posts = await PostModel.find()
       .sort({ createdAt: -1 })
       .populate("category")
+      .populate("author")
 
     if (posts.length === 0) {
       return res.status(500).json({ message: "Não há nenhum post ainda." })
