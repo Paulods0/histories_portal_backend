@@ -18,13 +18,24 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" })
     }
     const isPasswordCorrect = bcrypt.compareSync(password, user.password)
-    const secret = process.env.SECRET as string
-    const token = jwt.sign({ id: user._id, name: user.firstname }, secret)
-
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Password incorrect" })
     }
-    res.status(200).json({ message: "Success", token })
+
+    const secret = process.env.SECRET as string
+    const token = jwt.sign({ id: user._id }, secret, { expiresIn: "7d" })
+
+    res.status(200).json({
+      message: "success",
+      user: {
+        id: user._id,
+        email: user.email,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        posts: user.posts,
+      },
+      token,
+    })
   } catch (error) {
     res.status(400).json({ error })
   }

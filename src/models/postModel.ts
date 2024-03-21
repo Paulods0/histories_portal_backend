@@ -8,6 +8,7 @@ interface IPost {
   author?: Schema.Types.ObjectId
   isHighlighted: boolean
   category: Schema.Types.ObjectId
+  author_notes?: string
 }
 
 export interface IPostDB extends IPost, Document {}
@@ -21,6 +22,7 @@ const Post = new Schema(
     isHighlighted: { type: Boolean, required: true },
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     author: { type: Schema.Types.ObjectId, ref: "User" },
+    author_notes: { type: String },
   },
   { timestamps: true }
 )
