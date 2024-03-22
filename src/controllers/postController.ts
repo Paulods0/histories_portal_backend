@@ -8,18 +8,15 @@ const createPost = async (req: Request, res: Response) => {
   // const userId = req.headers
   const {
     title,
-    subtitle,
     category,
     content,
     isHighlighted,
     mainImage,
     author_id,
+    author_notes,
   } = req.body
   if (!title) {
     return res.status(400).json({ message: "O título é obrigatório" })
-  }
-  if (!subtitle) {
-    return res.status(400).json({ message: "O subtítulo é obrigatório" })
   }
   if (!category) {
     return res.status(400).json({ message: "A categoria é obrigatória" })
@@ -33,12 +30,13 @@ const createPost = async (req: Request, res: Response) => {
   try {
     const post = new PostModel({
       title,
-      subtitle,
+
       category,
       content,
       isHighlighted,
       mainImage,
       author: author_id,
+      author_notes: author_notes,
     })
     const user = await UserModel.findById(author_id)
     await post.save()
@@ -52,14 +50,17 @@ const createPost = async (req: Request, res: Response) => {
 }
 // GET ALL POSTS
 const getAllPosts = async (req: Request, res: Response) => {
-  const postsPerPage = 3
-  const { page } = req.query
-  const skipp = postsPerPage * Number(page)
   try {
     const posts = await PostModel.find()
       .sort({ createdAt: -1 })
-      .populate("category")
-      .populate("author")
+      .populate({
+        path: "author",
+        select: "_id firstname lastname",
+      })
+      .populate({
+        path: "category",
+        select: "_id name",
+      })
 
     if (posts.length === 0) {
       return res.status(500).json({ message: "Não há nenhum post ainda." })
@@ -132,11 +133,11 @@ const getAllPostsByCategory = async (req: Request, res: Response) => {
     const posts = await PostModel.find({ category: req.params.category })
     const filteredPosts: {
       title: string
-      subtitle: string
       mainImage: string
       content: string
-      author?: Schema.Types.ObjectId
+      author: Schema.Types.ObjectId
       isHighlighted: boolean
+      author_notes?: string
       category: Schema.Types.ObjectId
     }[] = posts.filter((post) => post.category !== null)
 
@@ -162,6 +163,35 @@ const getHighlightedPosts = async (req: Request, res: Response) => {
     res.status(500).json({ err: error })
   }
 }
+const getUserPosts = async (req: Request, res: Response) => {
+  const { user_id } = req.params
+
+  if (!Types.ObjectId.isValid(user_id)) {
+    return res
+      .status(400)
+      .json({ message: "O id do usuário não é um id válido" })
+  }
+
+  try {
+    const posts = await PostModel.find({
+      author: {
+        _id: user_id,
+      },
+    })
+      .populate({
+        path: "author",
+        select: "_id firstname lastname",
+      })
+      .populate({
+        path: "category",
+        select: "name _id",
+      })
+
+    res.json(posts)
+  } catch (error) {
+    res.json(error)
+  }
+}
 // DELETE POST
 const deletePost = async (req: Request, res: Response) => {
   try {
@@ -181,8 +211,7 @@ const deletePost = async (req: Request, res: Response) => {
 const updatePost = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const { title, subtitle, content, mainImage, category, isHighlighted } =
-      req.body
+    const { title, content, mainImage, category, isHighlighted } = req.body
     const postExists = await PostModel.findById(id)
     if (!postExists) {
       return res.status(404).json({ message: "O post solicitado não existe!" })
@@ -191,7 +220,6 @@ const updatePost = async (req: Request, res: Response) => {
       { _id: id },
       {
         title: title,
-        subtitle: subtitle,
         mainImage: mainImage,
         content: content,
         isHighlighted: isHighlighted,
@@ -216,5 +244,6 @@ export {
   getHighlightedPost,
   getSinglePost,
   getHighlightedPosts,
+  getUserPosts,
   updatePost,
 }

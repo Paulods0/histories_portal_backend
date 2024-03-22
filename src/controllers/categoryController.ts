@@ -1,16 +1,17 @@
 import { Request, Response } from "express"
 import { CategoryModel } from "../models/categoryModel"
+import { PostModel } from "../models/postModel"
 
 //CREATE CATEGORY
 export const createCategory = async (req: Request, res: Response) => {
-  const { name } = req.body
+  const { name, creator } = req.body
   if (!name) {
     return res
       .status(404)
       .json({ message: "O nome da categoria/tópico é obrigatório!" })
   }
   try {
-    const category = new CategoryModel({ name })
+    const category = new CategoryModel({ name, creator })
     await category.save()
     res
       .status(200)
@@ -25,7 +26,10 @@ export const createCategory = async (req: Request, res: Response) => {
 //GET ALL CATEGORY
 export const getAllCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await CategoryModel.find()
+    const categories = await CategoryModel.find().populate({
+      path: "creator",
+      select: "firstname lastname",
+    })
 
     res.status(200).json(categories)
   } catch (error) {
@@ -56,14 +60,15 @@ export const getSingleCategory = async (req: Request, res: Response) => {
 export const deleteCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const category = await CategoryModel.findById({ _id: id })
-    if (!category) {
+    const deleted = await CategoryModel.findByIdAndDelete(id)
+    if (!deleted) {
       return res.status(400).json({
         message:
           "Não foi possível deletar a categoria/tópico pois ela não existe.",
       })
     }
-    await category.deleteOne()
+    await PostModel.deleteMany({ category: id })
+
     res.status(200).json({ message: "Deletado com sucesso!" })
   } catch (error) {
     res.status(400).json({

@@ -8,6 +8,7 @@ import {
   getHighlightedPost,
   getHighlightedPosts,
   getSinglePost,
+  getUserPosts,
   updatePost,
 } from "../controllers/postController"
 
@@ -19,6 +20,7 @@ route.get("/posts", getAllPostsPagination)
 route.get("/category/:category", getAllPostsByCategory)
 route.get("/posts", getHighlightedPosts)
 route.get("/get/:id", getSinglePost)
+route.get("/get/userposts/:user_id", getUserPosts)
 route.delete("/delete/:id", deletePost)
 route.put("/:id", updatePost)
 
