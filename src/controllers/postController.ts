@@ -14,6 +14,7 @@ const createPost = async (req: Request, res: Response) => {
     mainImage,
     author_id,
     author_notes,
+    tag,
   } = req.body
   if (!title) {
     return res.status(400).json({ message: "O título é obrigatório" })
@@ -30,17 +31,17 @@ const createPost = async (req: Request, res: Response) => {
   try {
     const post = new PostModel({
       title,
-
       category,
       content,
       isHighlighted,
       mainImage,
       author: author_id,
       author_notes: author_notes,
+      tag: tag ? tag : [],
     })
     const user = await UserModel.findById(author_id)
-    await post.save()
 
+    await post.save()
     user?.posts.push(post._id)
     await user?.save()
     res.status(200).json({ message: "O post foi criado", data: post })
@@ -62,9 +63,6 @@ const getAllPosts = async (req: Request, res: Response) => {
         select: "_id name",
       })
 
-    if (posts.length === 0) {
-      return res.status(500).json({ message: "Não há nenhum post ainda." })
-    }
     res.status(200).json(posts)
   } catch (error) {
     res
@@ -72,6 +70,7 @@ const getAllPosts = async (req: Request, res: Response) => {
       .json({ err: "Erro no servidor, por favor tente novamente!" })
   }
 }
+
 const getAllPostsPagination = async (req: Request, res: Response) => {
   const postsPerPage = 3
   const { page } = req.query
@@ -97,13 +96,21 @@ const getAllPostsPagination = async (req: Request, res: Response) => {
 const getSinglePost = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const post = await PostModel.findById({ _id: id }).populate("category")
+    const post = await PostModel.findById({ _id: id })
+      .populate("category")
+      .populate({
+        path: "author",
+        select: "_id firstname lastname image",
+      })
 
     if (!post) {
       return res
         .status(404)
         .json({ error: "O post solicitado não foi encontrado!" })
     }
+
+    post.views += 1
+    post.save()
     res.status(200).json(post)
   } catch (error) {
     res
@@ -114,13 +121,12 @@ const getSinglePost = async (req: Request, res: Response) => {
 // GET SINGLE POST
 const getHighlightedPost = async (req: Request, res: Response) => {
   try {
-    const post = await PostModel.find(req.query)
-      .sort({ createdAt: -1 })
-      .limit(1)
-    if (!post) {
-      res.status(400).json({ message: "O post não foi encontrado" })
-    }
-    res.status(200).json({ data: post })
+    const post = await PostModel.find({ isHighlighted: true })
+
+    // if (!post) {
+    //   res.status(400).json({ message: "O post não foi encontrado" })
+    // }
+    res.status(200).json(post)
   } catch (error) {
     res
       .status(404)
@@ -130,7 +136,12 @@ const getHighlightedPost = async (req: Request, res: Response) => {
 //GET POST BY CATEGORY
 const getAllPostsByCategory = async (req: Request, res: Response) => {
   try {
-    const posts = await PostModel.find({ category: req.params.category })
+    const posts = await PostModel.find({
+      category: req.params.category,
+    }).populate({
+      path: "author",
+      select: "_id firstname lastname",
+    })
     const filteredPosts: {
       title: string
       mainImage: string
@@ -152,17 +163,21 @@ const getAllPostsByCategory = async (req: Request, res: Response) => {
     })
   }
 }
+//GET HIGHLIGHTED POST
 const getHighlightedPosts = async (req: Request, res: Response) => {
   try {
-    const { highlighted } = req.query
-    const highlightedPosts = await PostModel.find()
-      .where("isHighlighted")
-      .equals(true)
+    const highlightedPosts = await PostModel.find({
+      isHighlighted: {
+        $eq: false,
+      },
+    })
+
     res.status(200).json(highlightedPosts)
   } catch (error) {
     res.status(500).json({ err: error })
   }
 }
+//GET USER POSTS
 const getUserPosts = async (req: Request, res: Response) => {
   const { user_id } = req.params
 
@@ -192,6 +207,15 @@ const getUserPosts = async (req: Request, res: Response) => {
     res.json(error)
   }
 }
+//GET POSTS BY VIEWS
+const getMostViewedPosts = async (req: Request, res: Response) => {
+  try {
+    const posts = await PostModel.find().sort({ views: -1 })
+    res.status(200).json(posts)
+  } catch (error) {
+    res.json(error)
+  }
+}
 // DELETE POST
 const deletePost = async (req: Request, res: Response) => {
   try {
@@ -211,7 +235,7 @@ const deletePost = async (req: Request, res: Response) => {
 const updatePost = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const { title, content, mainImage, category, isHighlighted } = req.body
+    const { title, content, mainImage, category, isHighlighted, tag } = req.body
     const postExists = await PostModel.findById(id)
     if (!postExists) {
       return res.status(404).json({ message: "O post solicitado não existe!" })
@@ -224,6 +248,7 @@ const updatePost = async (req: Request, res: Response) => {
         content: content,
         isHighlighted: isHighlighted,
         category: category,
+        tag: tag,
       },
       { new: true }
     )
@@ -246,4 +271,5 @@ export {
   getHighlightedPosts,
   getUserPosts,
   updatePost,
+  getMostViewedPosts,
 }

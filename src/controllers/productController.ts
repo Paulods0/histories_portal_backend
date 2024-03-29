@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { ProductModel } from "../models/productModel"
 import { Types } from "mongoose"
+import { productCategoryModel } from "../models/productCategoryModel"
 
 const createProduct = async (req: Request, res: Response) => {
   try {
@@ -22,18 +23,30 @@ const createProduct = async (req: Request, res: Response) => {
     res.status(500).send({ erro: "Erro no servidor: " + error })
   }
 }
-
 const getAllProducts = async (req: Request, res: Response) => {
   try {
     const products = await ProductModel.find()
       .populate("category")
       .sort({ createdAt: -1 })
+
     if (!products || products.length === 0) {
-      res.status(404).json({ message: "Não há nenhum produto criado." })
+      return res.status(404).json(products)
     }
+
     res.status(200).json(products)
   } catch (error) {
     res.status(500).json({ err: "Erro no servidor: " + error })
+  }
+}
+const getProductsByCategory = async (req: Request, res: Response) => {
+  try {
+    const { cat } = req.query
+    const category = await productCategoryModel.findOne({ name: cat })
+    const products = await ProductModel.find({ category: category?._id })
+
+    res.json(products)
+  } catch (error) {
+    res.json(error)
   }
 }
 const getProductById = async (req: Request, res: Response) => {
@@ -105,4 +118,5 @@ export {
   getProductById,
   updateProduct,
   deleteProduct,
+  getProductsByCategory,
 }

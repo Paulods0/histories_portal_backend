@@ -23,12 +23,10 @@ const createProductCategory = async (req: Request, res: Response) => {
 }
 const getAllProductCategories = async (req: Request, res: Response) => {
   try {
-    const productCategories = await productCategoryModel
-      .find()
-      .sort({ createdAt: -1 })
+    const productCategories = await productCategoryModel.find()
 
     if (!productCategoryModel || productCategories.length === 0) {
-      return res.status(404).json({ message: "Não há nenhuma categoria" })
+      return res.status(404).json(productCategories)
     }
     res.status(200).json(productCategories)
   } catch (error) {

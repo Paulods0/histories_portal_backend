@@ -26,10 +26,12 @@ export const createCategory = async (req: Request, res: Response) => {
 //GET ALL CATEGORY
 export const getAllCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await CategoryModel.find().populate({
-      path: "creator",
-      select: "firstname lastname",
-    })
+    const categories = await CategoryModel.find()
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "creator",
+        select: "firstname lastname",
+      })
 
     res.status(200).json(categories)
   } catch (error) {

@@ -32,6 +32,7 @@ export const loginUser = async (req: Request, res: Response) => {
         email: user.email,
         firstname: user.firstname,
         lastname: user.lastname,
+        image: user.image ? user.image : "",
         posts: user.posts,
       },
       token,
@@ -44,7 +45,7 @@ export const createUser = async (req: Request, res: Response) => {
   const saltRounds = 10
   const salt = bcrypt.genSaltSync(saltRounds)
   try {
-    const { firstname, lastname, email, password } = req.body
+    const { firstname, lastname, email, password, image } = req.body
     if (!firstname) {
       return res.status(400).json({ message: "Firstname is required" })
     }
@@ -69,6 +70,7 @@ export const createUser = async (req: Request, res: Response) => {
       lastname,
       email,
       password: hashedPassword,
+      image: image,
     })
     const response = await user.save()
     res.status(201).json({ message: "User saved successfully", response })

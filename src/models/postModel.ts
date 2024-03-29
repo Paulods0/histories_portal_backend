@@ -8,6 +8,10 @@ interface IPost {
   isHighlighted: boolean
   category: Schema.Types.ObjectId
   author_notes?: string
+  tag?: string[]
+  rating?: number
+  price?: number
+  views: number
 }
 
 export interface IPostDB extends IPost, Document {}
@@ -21,6 +25,9 @@ const Post = new Schema(
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },
     author_notes: { type: String },
+    tag: [{ type: String }],
+    price: { type: Number },
+    views: { type: Number, default: 0 },
   },
   { timestamps: true }
 )

@@ -13,7 +13,7 @@ const route = Router()
 
 route.post("/login", loginUser)
 route.post("/", createUser)
-route.get("/", checkValidation, getUsers)
+route.get("/", getUsers)
 route.get("/:id", getSingleUser)
 route.patch("/:id", updateUser)
 route.delete("/:id", deleteUser)
