@@ -12,6 +12,8 @@ interface IPost {
   rating?: number
   price?: number
   views: number
+  longitude?: string
+  latitude?: string
 }
 
 export interface IPostDB extends IPost, Document {}
@@ -28,6 +30,9 @@ const Post = new Schema(
     tag: [{ type: String }],
     price: { type: Number },
     views: { type: Number, default: 0 },
+    rating: { type: Number },
+    longitude: { type: Number },
+    latitude: { type: Number },
   },
   { timestamps: true }
 )

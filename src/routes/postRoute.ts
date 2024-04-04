@@ -6,8 +6,8 @@ import {
   getAllPostsByCategory,
   getAllPostsPagination,
   getHighlightedPost,
-  getHighlightedPosts,
   getMostViewedPosts,
+  getSearchedPosts,
   getSinglePost,
   getUserPosts,
   updatePost,
@@ -19,7 +19,8 @@ route.post("/create-post", createPost)
 route.get("/get", getAllPosts)
 route.get("/posts", getAllPostsPagination)
 route.get("/category/:category", getAllPostsByCategory)
-route.get("/posts/highlighted", getHighlightedPosts)
+route.get("/highlighted", getHighlightedPost)
+route.get("/search", getSearchedPosts)
 route.get("/get/:id", getSinglePost)
 route.get("/get/userposts/:user_id", getUserPosts)
 route.get("/mostviewed", getMostViewedPosts)

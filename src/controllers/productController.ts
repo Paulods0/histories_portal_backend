@@ -5,7 +5,7 @@ import { productCategoryModel } from "../models/productCategoryModel"
 
 const createProduct = async (req: Request, res: Response) => {
   try {
-    const { name, category, price, image } = req.body
+    const { name, category, price, image, quantity } = req.body
     if (!name || !category || !price || !image) {
       return res
         .status(400)
@@ -16,6 +16,7 @@ const createProduct = async (req: Request, res: Response) => {
       category: category,
       price: price,
       image: image,
+      quantity: quantity | 0,
     })
     await product.save()
     res.status(201).json({ message: "O produto foi criado com sucesso " })
@@ -68,7 +69,7 @@ const getProductById = async (req: Request, res: Response) => {
 }
 const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params
-  const { name, category, price } = req.body
+  const { name, category, price, quantity } = req.body
   try {
     if (!Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "O id provido não é válido" })
@@ -84,6 +85,7 @@ const updateProduct = async (req: Request, res: Response) => {
         name: name ? name : product!!.name,
         category: category ? category : product!!.category,
         price: price ? price : product!!.price,
+        quantity: quantity ? quantity : product!!.quantity,
       },
       { new: true }
     )

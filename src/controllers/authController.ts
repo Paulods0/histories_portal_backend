@@ -13,7 +13,7 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Password is required" })
     }
 
-    const user = await UserModel.findOne({ email })
+    const user = await UserModel.findOne({ email }).populate("posts")
     if (!user) {
       return res.status(404).json({ message: "User not found" })
     }
@@ -26,15 +26,7 @@ export const loginUser = async (req: Request, res: Response) => {
     const token = jwt.sign({ id: user._id }, secret, { expiresIn: "7d" })
 
     res.status(200).json({
-      message: "success",
-      user: {
-        id: user._id,
-        email: user.email,
-        firstname: user.firstname,
-        lastname: user.lastname,
-        image: user.image ? user.image : "",
-        posts: user.posts,
-      },
+      id: user._id,
       token,
     })
   } catch (error) {
@@ -98,7 +90,7 @@ export const getSingleUser = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" })
     }
-    res.status(200).json({ message: "ok", user })
+    res.status(200).json(user)
   } catch (error) {
     res.status(404).json({ error: error, message: "User not found" })
   }
@@ -106,13 +98,13 @@ export const getSingleUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const { firstame, lastname } = req.body
+    const { firstame, lastname, image } = req.body
     const newUser = await UserModel.findOneAndUpdate(
       { _id: id },
-      { firstame, lastname },
+      { firstame, lastname, image },
       { new: true }
     )
-    res.status(200).json({ message: "User succefuly updated", newUser })
+    res.status(200).json(newUser)
   } catch (error) {
     res.status(404).json({ error: error, message: "Error while updating user" })
   }
@@ -124,5 +116,21 @@ export const deleteUser = async (req: Request, res: Response) => {
     res.status(200).json({ message: "User deleted successfuly" })
   } catch (error) {
     res.status(400).json({ error: error, message: "Error while deleting user" })
+  }
+}
+export const forgetPassword = async (req: Request, res: Response) => {
+  const { email, newPassword } = req.body
+  try {
+    const user = UserModel.findOne({ email: email })
+    if (!user) {
+      return res.status(404).json({ message: "Usuário não encontrado" })
+    }
+    const SALT = bcrypt.genSaltSync(10)
+    const newHashedPassword = bcrypt.hashSync(newPassword, SALT)
+    const newUser = await user.updateOne({ password: newHashedPassword })
+    return res.status(200).json(newUser)
+  } catch (error) {
+    console.error("Error: " + error)
+    return res.status(400).json(error)
   }
 }

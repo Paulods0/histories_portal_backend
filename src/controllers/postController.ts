@@ -15,6 +15,8 @@ const createPost = async (req: Request, res: Response) => {
     author_id,
     author_notes,
     tag,
+    longitude,
+    latitude,
   } = req.body
   if (!title) {
     return res.status(400).json({ message: "O título é obrigatório" })
@@ -29,6 +31,15 @@ const createPost = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "A imagem principal é obrigatória" })
   }
   try {
+    if (isHighlighted) {
+      const currentlyHighlighted = await PostModel.findOne({
+        isHighlighted: true,
+      })
+      if (currentlyHighlighted) {
+        currentlyHighlighted.isHighlighted = false
+        await currentlyHighlighted.save()
+      }
+    }
     const post = new PostModel({
       title,
       category,
@@ -38,6 +49,8 @@ const createPost = async (req: Request, res: Response) => {
       author: author_id,
       author_notes: author_notes,
       tag: tag ? tag : [],
+      longitude: longitude ? longitude : "",
+      latitude: latitude ? latitude : "",
     })
     const user = await UserModel.findById(author_id)
 
@@ -56,7 +69,7 @@ const getAllPosts = async (req: Request, res: Response) => {
       .sort({ createdAt: -1 })
       .populate({
         path: "author",
-        select: "_id firstname lastname",
+        select: "_id firstname lastname image",
       })
       .populate({
         path: "category",
@@ -70,7 +83,6 @@ const getAllPosts = async (req: Request, res: Response) => {
       .json({ err: "Erro no servidor, por favor tente novamente!" })
   }
 }
-
 const getAllPostsPagination = async (req: Request, res: Response) => {
   const postsPerPage = 3
   const { page } = req.query
@@ -118,30 +130,21 @@ const getSinglePost = async (req: Request, res: Response) => {
       .json({ err: "Erro no servidor ao tentar obter o post solicitado" })
   }
 }
-// GET SINGLE POST
-const getHighlightedPost = async (req: Request, res: Response) => {
-  try {
-    const post = await PostModel.find({ isHighlighted: true })
-
-    // if (!post) {
-    //   res.status(400).json({ message: "O post não foi encontrado" })
-    // }
-    res.status(200).json(post)
-  } catch (error) {
-    res
-      .status(404)
-      .json({ err: "Erro no servidor, por favor tente novamente!" })
-  }
-}
 //GET POST BY CATEGORY
 const getAllPostsByCategory = async (req: Request, res: Response) => {
   try {
     const posts = await PostModel.find({
       category: req.params.category,
-    }).populate({
-      path: "author",
-      select: "_id firstname lastname",
     })
+      .populate({
+        path: "author",
+        select: "_id firstname lastname image",
+      })
+      .populate({
+        path: "category",
+        select: ":_id name",
+      })
+
     const filteredPosts: {
       title: string
       mainImage: string
@@ -164,14 +167,14 @@ const getAllPostsByCategory = async (req: Request, res: Response) => {
   }
 }
 //GET HIGHLIGHTED POST
-const getHighlightedPosts = async (req: Request, res: Response) => {
+const getHighlightedPost = async (req: Request, res: Response) => {
   try {
-    const highlightedPosts = await PostModel.find({
-      isHighlighted: {
-        $eq: false,
-      },
+    const highlightedPosts = await PostModel.findOne({
+      isHighlighted: true,
+    }).populate({
+      path: "author",
+      select: "firstname lastname",
     })
-
     res.status(200).json(highlightedPosts)
   } catch (error) {
     res.status(500).json({ err: error })
@@ -216,6 +219,27 @@ const getMostViewedPosts = async (req: Request, res: Response) => {
     res.json(error)
   }
 }
+//GET SEARCHED POST
+const getSearchedPosts = async (req: Request, res: Response) => {
+  const value = req.query.value || "".toLowerCase()
+  try {
+    const posts = await PostModel.find()
+      .populate("category")
+      .populate({
+        path: "author",
+        select: "firstname lastname",
+      })
+      .sort({ createdAt: -1 })
+
+    const searchResults = posts.filter((post) =>
+      post.title.toLowerCase().includes(value as string)
+    )
+    res.status(200).json({ data: searchResults, count: searchResults.length })
+  } catch (error) {
+    console.error(error)
+    res.status(404).json(error)
+  }
+}
 // DELETE POST
 const deletePost = async (req: Request, res: Response) => {
   try {
@@ -239,6 +263,15 @@ const updatePost = async (req: Request, res: Response) => {
     const postExists = await PostModel.findById(id)
     if (!postExists) {
       return res.status(404).json({ message: "O post solicitado não existe!" })
+    }
+    if (isHighlighted) {
+      const currentlyHighlighted = await PostModel.findOne({
+        isHighlighted: true,
+      })
+      if (currentlyHighlighted) {
+        currentlyHighlighted.isHighlighted = false
+        await currentlyHighlighted.save()
+      }
     }
     const newPost = await PostModel.findOneAndUpdate(
       { _id: id },
@@ -266,9 +299,9 @@ export {
   deletePost,
   getAllPostsByCategory,
   getAllPostsPagination,
-  getHighlightedPost,
+  getSearchedPosts,
   getSinglePost,
-  getHighlightedPosts,
+  getHighlightedPost,
   getUserPosts,
   updatePost,
   getMostViewedPosts,

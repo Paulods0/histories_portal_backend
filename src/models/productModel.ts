@@ -5,6 +5,7 @@ interface IProductSchema {
   name: string
   price: string
   category: Schema.Types.ObjectId
+  quantity?: number
 }
 
 const productSchema = new mongoose.Schema<IProductSchema>(
@@ -22,6 +23,10 @@ const productSchema = new mongoose.Schema<IProductSchema>(
     price: {
       type: String,
       required: true,
+    },
+    quantity: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }
