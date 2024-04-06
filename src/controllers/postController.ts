@@ -219,6 +219,7 @@ const getMostViewedPosts = async (req: Request, res: Response) => {
     res.json(error)
   }
 }
+
 //GET SEARCHED POST
 const getSearchedPosts = async (req: Request, res: Response) => {
   const value = req.query.value || "".toLowerCase()
