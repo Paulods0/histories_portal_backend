@@ -64,8 +64,13 @@ const createPost = async (req: Request, res: Response) => {
 }
 // GET ALL POSTS
 const getAllPosts = async (req: Request, res: Response) => {
+  const { page } = req.query
+  const postsPerPage = 4
+  const skip = postsPerPage * Number(page!!)
   try {
     const posts = await PostModel.find()
+      .limit(postsPerPage)
+      .skip(skip)
       .sort({ createdAt: -1 })
       .populate({
         path: "author",
@@ -84,20 +89,43 @@ const getAllPosts = async (req: Request, res: Response) => {
   }
 }
 const getAllPostsPagination = async (req: Request, res: Response) => {
-  const postsPerPage = 3
-  const { page } = req.query
+  const postsPerPage = 4
+  const page = req.params.page || 1
   const skipp = postsPerPage * Number(page)
-  try {
-    const posts = await PostModel.find()
-      .sort({ createdAt: -1 })
-      .populate("category")
-      .limit(postsPerPage)
-      .skip(skipp)
 
-    if (posts.length === 0) {
-      return res.status(500).json({ message: "Nada a mostrar" })
+  try {
+    const totalPosts = await PostModel.countDocuments()
+    let posts
+    if (req.params.page) {
+      posts = await PostModel.find()
+        .sort({ createdAt: -1 })
+        .sort({ createdAt: -1 })
+        .populate({
+          path: "author",
+          select: "_id firstname lastname image",
+        })
+        .populate({
+          path: "category",
+          select: "_id name",
+        })
+        .limit(postsPerPage)
+        .skip(skipp)
+    } else {
+      posts = await PostModel.find()
+        .sort({ createdAt: -1 })
+        .sort({ createdAt: -1 })
+        .populate({
+          path: "author",
+          select: "_id firstname lastname image",
+        })
+        .populate({
+          path: "category",
+          select: "_id name",
+        })
     }
-    res.status(200).json({ posts: posts.length, data: posts })
+
+    const totalPages = Math.floor(totalPosts / postsPerPage)
+    return res.status(200).json({ pages: totalPages, posts })
   } catch (error) {
     res
       .status(404)
@@ -142,7 +170,7 @@ const getAllPostsByCategory = async (req: Request, res: Response) => {
       })
       .populate({
         path: "category",
-        select: ":_id name",
+        select: ":_id name slug",
       })
 
     const filteredPosts: {
@@ -198,7 +226,7 @@ const getUserPosts = async (req: Request, res: Response) => {
     })
       .populate({
         path: "author",
-        select: "_id firstname lastname",
+        select: "_id firstname lastname image",
       })
       .populate({
         path: "category",
@@ -219,7 +247,6 @@ const getMostViewedPosts = async (req: Request, res: Response) => {
     res.json(error)
   }
 }
-
 //GET SEARCHED POST
 const getSearchedPosts = async (req: Request, res: Response) => {
   const value = req.query.value || "".toLowerCase()
@@ -293,6 +320,38 @@ const updatePost = async (req: Request, res: Response) => {
       .json({ err: "Erro no servidor ao tentar atualizar o post!: " + error })
   }
 }
+const likePost = async (req: Request, res: Response) => {
+  try {
+    const post = await PostModel.findById(req.params.postId)
+    if (!post) {
+      return res.status(404).json({ message: "Não encontrado" })
+    }
+    post.rating += 1
+    await post.save()
+    return res.status(200).json({ clicked: true, rating: post.rating })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: "Erro No Servidor" })
+  }
+}
+const deslikePost = async (req: Request, res: Response) => {
+  try {
+    const post = await PostModel.findById(req.params.postId)
+    if (!post) {
+      return res.status(404).json({ message: "Não encontrado" })
+    }
+    if (post.rating >= 1) {
+      post.rating -= 1
+    } else {
+      return res.status(400).json(post.rating)
+    }
+    await post.save()
+    return res.status(200).json({ clicked: false, rating: post.rating })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: "Erro No Servidor" })
+  }
+}
 
 export {
   createPost,
@@ -306,4 +365,6 @@ export {
   getUserPosts,
   updatePost,
   getMostViewedPosts,
+  likePost,
+  deslikePost,
 }

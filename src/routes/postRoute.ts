@@ -2,6 +2,7 @@ import { Router } from "express"
 import {
   createPost,
   deletePost,
+  deslikePost,
   getAllPosts,
   getAllPostsByCategory,
   getAllPostsPagination,
@@ -10,14 +11,17 @@ import {
   getSearchedPosts,
   getSinglePost,
   getUserPosts,
+  likePost,
   updatePost,
 } from "../controllers/postController"
 
 const route = Router()
 
 route.post("/create-post", createPost)
+route.put("/like/:postId", likePost)
+route.put("/deslike/:postId", deslikePost)
 route.get("/get", getAllPosts)
-route.get("/posts", getAllPostsPagination)
+route.get("/posts/page/:page", getAllPostsPagination)
 route.get("/category/:category", getAllPostsByCategory)
 route.get("/highlighted", getHighlightedPost)
 route.get("/search", getSearchedPosts)

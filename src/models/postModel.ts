@@ -9,7 +9,8 @@ interface IPost {
   category: Schema.Types.ObjectId
   author_notes?: string
   tag?: string[]
-  rating?: number
+  slug: string
+  rating: number
   price?: number
   views: number
   longitude?: string
@@ -28,9 +29,10 @@ const Post = new Schema(
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },
     author_notes: { type: String },
     tag: [{ type: String }],
+
     price: { type: Number },
     views: { type: Number, default: 0 },
-    rating: { type: Number },
+    rating: { type: Number, default: 0 },
     longitude: { type: Number },
     latitude: { type: Number },
   },

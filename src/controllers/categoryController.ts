@@ -11,7 +11,8 @@ export const createCategory = async (req: Request, res: Response) => {
       .json({ message: "O nome da categoria/tópico é obrigatório!" })
   }
   try {
-    const category = new CategoryModel({ name, creator })
+    const category_slug = name.trim().replace(" ", "-").toLowerCase()
+    const category = new CategoryModel({ name, creator, slug: category_slug })
     await category.save()
     res
       .status(200)
@@ -83,11 +84,11 @@ export const deleteCategory = async (req: Request, res: Response) => {
 export const updateCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const { name } = req.body
-
+    const { name, slug } = req.body
+    const category_slug = slug.trim().replace(" ", "-").toLowerCase()
     const newCategory = await CategoryModel.findOneAndUpdate(
       { _id: id },
-      { name },
+      { name, slug: category_slug },
       { new: true }
     )
     res.status(200).json({ message: "Atualizado com sucesso", newCategory })
