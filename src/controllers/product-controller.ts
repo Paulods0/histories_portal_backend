@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import { ProductModel } from "../models/productModel"
+import { ProductModel } from "../models/product-model"
 import { Types } from "mongoose"
-import { productCategoryModel } from "../models/productCategoryModel"
+import { productCategoryModel } from "../models/product-category-model"
 
 const createProduct = async (req: Request, res: Response) => {
   try {

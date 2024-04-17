@@ -12,8 +12,9 @@ import {
   getSinglePost,
   getUserPosts,
   likePost,
+  testController,
   updatePost,
-} from "../controllers/postController"
+} from "../controllers/post-controller"
 
 const route = Router()
 
@@ -21,6 +22,7 @@ route.post("/create-post", createPost)
 route.put("/like/:postId", likePost)
 route.put("/deslike/:postId", deslikePost)
 route.get("/get", getAllPosts)
+route.get("/test", testController)
 route.get("/posts/page/:page", getAllPostsPagination)
 route.get("/category/:category", getAllPostsByCategory)
 route.get("/highlighted", getHighlightedPost)
@@ -29,6 +31,6 @@ route.get("/get/:id", getSinglePost)
 route.get("/get/userposts/:user_id", getUserPosts)
 route.get("/mostviewed", getMostViewedPosts)
 route.delete("/delete/:id", deletePost)
-route.put("/:id", updatePost)
+route.patch("/:id", updatePost)
 
 export = route

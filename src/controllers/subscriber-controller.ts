@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
-import { SubscriberModel } from "../models/subscriberModel"
-import { PostModel } from "../models/postModel"
+import { SubscriberModel } from "../models/subscriber-model"
+import { PostModel } from "../models/post-model"
 import { createTransport } from "nodemailer"
 import hbs from "nodemailer-express-handlebars"
 import path from "path"

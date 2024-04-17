@@ -7,7 +7,7 @@ import {
   getUsers,
   loginUser,
   updateUser,
-} from "../controllers/authController"
+} from "../controllers/user-controller"
 import { checkValidation } from "../middlewares/checkValidation"
 
 const route = Router()

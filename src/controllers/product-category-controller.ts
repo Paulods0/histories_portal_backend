@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { productCategoryModel } from "../models/productCategoryModel"
+import { productCategoryModel } from "../models/product-category-model"
 import { Types } from "mongoose"
 
 const createProductCategory = async (req: Request, res: Response) => {

@@ -4,7 +4,7 @@ import {
   unregisterSubscriber,
   sendEmail,
   getAllSubscribers,
-} from "../controllers/subscriberController"
+} from "../controllers/subscriber-controller"
 
 const router = Router()
 

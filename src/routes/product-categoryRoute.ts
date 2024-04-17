@@ -5,7 +5,7 @@ import {
   getProductCategoryById,
   updateProductCategory,
   deleteProductCategory,
-} from "../controllers/productCategoryController"
+} from "../controllers/product-category-controller"
 
 const route = Router()
 

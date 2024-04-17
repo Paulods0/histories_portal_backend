@@ -1,9 +1,9 @@
 import { Request, Response } from "express"
-import { CategoryModel } from "../models/categoryModel"
-import { PostModel } from "../models/postModel"
+import { PostCategory } from "../models/post-category-model"
+import { PostModel } from "../models/post-model"
 
 //CREATE CATEGORY
-export const createCategory = async (req: Request, res: Response) => {
+export const createPostCategory = async (req: Request, res: Response) => {
   const { name, creator } = req.body
   if (!name) {
     return res
@@ -12,7 +12,7 @@ export const createCategory = async (req: Request, res: Response) => {
   }
   try {
     const category_slug = name.trim().replace(" ", "-").toLowerCase()
-    const category = new CategoryModel({ name, creator, slug: category_slug })
+    const category = new PostCategory({ name, creator, slug: category_slug })
     await category.save()
     res
       .status(200)
@@ -25,9 +25,9 @@ export const createCategory = async (req: Request, res: Response) => {
   }
 }
 //GET ALL CATEGORY
-export const getAllCategories = async (req: Request, res: Response) => {
+export const getAllPostCategories = async (req: Request, res: Response) => {
   try {
-    const categories = await CategoryModel.find()
+    const categories = await PostCategory.find()
       .sort({ createdAt: -1 })
       .populate({
         path: "creator",
@@ -43,10 +43,10 @@ export const getAllCategories = async (req: Request, res: Response) => {
   }
 }
 //GET SINGLE CATEGORY
-export const getSingleCategory = async (req: Request, res: Response) => {
+export const getSinglePostCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const category = await CategoryModel.findById({ _id: id })
+    const category = await PostCategory.findById({ _id: id })
     if (!category) {
       return res
         .status(404)
@@ -60,10 +60,10 @@ export const getSingleCategory = async (req: Request, res: Response) => {
   }
 }
 //DELTE SINGLE CATEGORY
-export const deleteCategory = async (req: Request, res: Response) => {
+export const deletePostCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const deleted = await CategoryModel.findByIdAndDelete(id)
+    const deleted = await PostCategory.findByIdAndDelete(id)
     if (!deleted) {
       return res.status(400).json({
         message:
@@ -81,12 +81,12 @@ export const deleteCategory = async (req: Request, res: Response) => {
   }
 }
 //UPDATE CATEGORY
-export const updateCategory = async (req: Request, res: Response) => {
+export const updatePostCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
     const { name, slug } = req.body
     const category_slug = slug.trim().replace(" ", "-").toLowerCase()
-    const newCategory = await CategoryModel.findOneAndUpdate(
+    const newCategory = await PostCategory.findOneAndUpdate(
       { _id: id },
       { name, slug: category_slug },
       { new: true }
