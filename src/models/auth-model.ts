@@ -1,24 +1,15 @@
 import mongoose, { Schema, Types } from "mongoose"
 
-interface IUser {
-  firstname: string
-  lastname: string
-  email: string
-  password: string
-  image?: string
-  posts: Types.ObjectId[]
-}
-
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema(
   {
-    firstname: { type: String, required: true },
-    lastname: { type: String, required: true },
-    email: { type: String, required: true },
     image: { type: String },
+    email: { type: String, required: true },
     password: { type: String, required: true },
+    lastname: { type: String, required: true },
+    firstname: { type: String, required: true },
     posts: [{ type: Types.ObjectId, ref: "Post" }],
   },
   { timestamps: true }
 )
 
-export const UserModel = mongoose.model<IUser>("User", userSchema)
+export const UserModel = mongoose.model("User", userSchema)

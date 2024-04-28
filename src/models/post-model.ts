@@ -14,6 +14,7 @@ const Post = new Schema(
     longitude: { type: String },
     latitude: { type: String },
     tag: [{ type: String }],
+    category_slug: { type: String },
   },
   { timestamps: true }
 )

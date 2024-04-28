@@ -1,10 +1,11 @@
 import { Request, Response } from "express"
 import { PostModel } from "../models/post-model"
-import { Schema, Types } from "mongoose"
+import { Types } from "mongoose"
 import { UserModel } from "../models/auth-model"
+import { PostCategory } from "../models/post-category-model"
+import { Post } from "../types"
 
-// CREATE POST
-const createPost = async (req: Request, res: Response) => {
+const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
   const {
     title,
     category,
@@ -17,51 +18,75 @@ const createPost = async (req: Request, res: Response) => {
     longitude,
     latitude,
   } = req.body
-  if (!title) {
-    return res.status(400).json({ message: "O título é obrigatório" })
+  if (!title || !mainImage || !content || !category) {
+    return res.status(400).json({
+      sucess: false,
+      message: "Por favor preencha todos os campos obrigatórios.",
+    })
   }
-  if (!category) {
-    return res.status(400).json({ message: "A categoria é obrigatória" })
-  }
-  if (!content) {
-    return res.status(400).json({ message: "O conteúdo é obrigatório" })
-  }
-  if (!mainImage) {
-    return res.status(400).json({ message: "A imagem principal é obrigatória" })
-  }
+
   try {
     if (highlighted) {
-      const currentlyHighlighted = await PostModel.findOne({
+      const currentHighlightedPost = await PostModel.findOne({
         highlighted: true,
       })
-      if (currentlyHighlighted) {
-        currentlyHighlighted.highlighted = false
-        await currentlyHighlighted.save()
+
+      if (currentHighlightedPost) {
+        currentHighlightedPost.highlighted = false
+        await currentHighlightedPost.save()
       }
     }
+
+    if (!Types.ObjectId.isValid(category)) {
+      return res.status(400).json({ success: false, message: "Id inválido." })
+    }
+
+    const postCategory = await PostCategory.findById(category)
+    if (!postCategory) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Categoria não encontrada." })
+    }
+    const postSlug = postCategory.name.toLowerCase().replace(" ", "-")
+
     const post = new PostModel({
       title,
-      category,
       content,
-      highlighted,
+      tag: tag,
+      category,
       mainImage,
+      highlighted,
       author: author_id,
+      latitude: latitude,
+      longitude: longitude,
+      category_slug: postSlug,
       author_notes: author_notes,
-      tag: tag ? tag : [],
-      longitude: longitude ? longitude : "",
-      latitude: latitude ? latitude : "",
     })
-    const user = await UserModel.findById(author_id)
 
+    if (!Types.ObjectId.isValid(author_id)) {
+      return res.status(400).json({
+        success: false,
+        message: "O id do usuário, não é um id válido.",
+      })
+    }
+    const user = await UserModel.findById({ _id: author_id })
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Usuário não encontrado." })
+    }
     await post.save()
-    user?.posts.push(post._id)
+    user.posts.push(post._id)
     await user?.save()
-    res.status(200).json({ message: "O post foi criado", data: post })
+    res
+      .status(201)
+      .json({ success: true, message: "O post foi criado com sucesso." })
   } catch (error) {
-    res.status(404).json({ error, err: "Fail while creating the post" })
+    res
+      .status(400)
+      .json({ success: false, erro: error, message: "Erro ao criar o post." })
   }
 }
-// GET ALL POSTS
 const getAllPosts = async (req: Request, res: Response) => {
   const { page } = req.query || 1
   const postsPerPage = 4
@@ -143,37 +168,42 @@ const getAllPostsPagination = async (req: Request, res: Response) => {
       .json({ err: "Erro no servidor, por favor tente novamente!" })
   }
 }
-// GET SINGLE POST
-const getSinglePost = async (req: Request, res: Response) => {
+const getSinglePost = async (req: Request<{ id: string }>, res: Response) => {
   try {
     const { id } = req.params
-    const post = await PostModel.findById({ _id: id })
-      .populate("category")
-      .populate({
-        path: "author",
-        select: "_id firstname lastname image",
-      })
+    if (!Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: "Id inválido." })
+    }
+    const post = await PostModel.findById(id).populate("category").populate({
+      path: "author",
+      select: "_id firstname lastname image",
+    })
 
     if (!post) {
-      return res
-        .status(404)
-        .json({ error: "O post solicitado não foi encontrado!" })
+      return res.status(404).json({
+        success: false,
+        message: "Não encontrado.",
+      })
     }
 
     post.views += 1
-    post.save()
+    await post.save()
     res.status(200).json(post)
   } catch (error) {
-    res
-      .status(404)
-      .json({ err: "Erro no servidor ao tentar obter o post solicitado" })
+    res.status(404).json({
+      success: false,
+      message: "Erro ao tentar obter o post solicitado.",
+      erro: error,
+    })
   }
 }
-//GET POST BY CATEGORY
-const getAllPostsByCategory = async (req: Request, res: Response) => {
+const getByCategory = async (
+  req: Request<{ category_slug: string }>,
+  res: Response
+) => {
   try {
     const posts = await PostModel.find({
-      category: req.params.category,
+      category_slug: req.params.category_slug,
     })
       .populate({
         path: "author",
@@ -183,6 +213,7 @@ const getAllPostsByCategory = async (req: Request, res: Response) => {
         path: "category",
         select: ":_id name slug",
       })
+    return res.status(200).json(posts)
   } catch (error) {
     res.status(500).json({
       err: error,
@@ -190,7 +221,6 @@ const getAllPostsByCategory = async (req: Request, res: Response) => {
     })
   }
 }
-//GET HIGHLIGHTED POST
 const getHighlightedPost = async (req: Request, res: Response) => {
   try {
     const highlightedPosts = await PostModel.findOne({
@@ -204,14 +234,16 @@ const getHighlightedPost = async (req: Request, res: Response) => {
     res.status(500).json({ err: error })
   }
 }
-//GET USER POSTS
-const getUserPosts = async (req: Request, res: Response) => {
+const getUserPosts = async (
+  req: Request<{ user_id: string }>,
+  res: Response
+) => {
   const { user_id } = req.params
 
   if (!Types.ObjectId.isValid(user_id)) {
     return res
       .status(400)
-      .json({ message: "O id do usuário não é um id válido" })
+      .json({ message: "O id do usuário não é um id válido." })
   }
 
   try {
@@ -229,12 +261,11 @@ const getUserPosts = async (req: Request, res: Response) => {
         select: "name _id",
       })
 
-    res.json(posts)
+    return res.json(posts)
   } catch (error) {
-    res.json(error)
+    return res.json(error)
   }
 }
-//GET POSTS BY VIEWS
 const getMostViewedPosts = async (req: Request, res: Response) => {
   try {
     const posts = await PostModel.find().sort({ views: -1 })
@@ -243,7 +274,6 @@ const getMostViewedPosts = async (req: Request, res: Response) => {
     res.json(error)
   }
 }
-//GET SEARCHED POST
 const getSearchedPosts = async (req: Request, res: Response) => {
   const value = req.query.value || "".toLowerCase()
   try {
@@ -264,7 +294,6 @@ const getSearchedPosts = async (req: Request, res: Response) => {
     res.status(404).json(error)
   }
 }
-// DELETE POST
 const deletePost = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
@@ -334,7 +363,7 @@ const updatePost = async (req: Request, res: Response) => {
 }
 const likePost = async (req: Request, res: Response) => {
   try {
-    const post = await PostModel.findById(req.params.postId)
+    const post = await PostModel.findById(req.params.id)
     if (!post) {
       return res.status(404).json({ message: "Não encontrado" })
     }
@@ -348,7 +377,7 @@ const likePost = async (req: Request, res: Response) => {
 }
 const deslikePost = async (req: Request, res: Response) => {
   try {
-    const post = await PostModel.findById(req.params.postId)
+    const post = await PostModel.findById(req.params.id)
     if (!post) {
       return res.status(404).json({ message: "Não encontrado" })
     }
@@ -391,12 +420,12 @@ export {
   createPost,
   getAllPosts,
   deletePost,
-  getAllPostsByCategory,
+  getByCategory,
   getAllPostsPagination,
   getSearchedPosts,
   getSinglePost,
-  getHighlightedPost,
   getUserPosts,
+  getHighlightedPost,
   updatePost,
   getMostViewedPosts,
   likePost,

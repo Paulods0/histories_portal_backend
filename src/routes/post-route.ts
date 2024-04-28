@@ -1,36 +1,37 @@
 import { Router } from "express"
 import {
+  likePost,
   createPost,
+  updatePost,
   deletePost,
   deslikePost,
   getAllPosts,
-  getAllPostsByCategory,
+  getUserPosts,
+  getByCategory,
+  getSinglePost,
+  testController,
+  getSearchedPosts,
+  getMostViewedPosts,
   getAllPostsPagination,
   getHighlightedPost,
-  getMostViewedPosts,
-  getSearchedPosts,
-  getSinglePost,
-  getUserPosts,
-  likePost,
-  testController,
-  updatePost,
 } from "../controllers/post-controller"
 
 const route = Router()
 
-route.post("/create-post", createPost)
-route.put("/like/:postId", likePost)
-route.put("/deslike/:postId", deslikePost)
-route.get("/get", getAllPosts)
-route.get("/test", testController)
-route.get("/posts/page/:page", getAllPostsPagination)
-route.get("/category/:category", getAllPostsByCategory)
-route.get("/highlighted", getHighlightedPost)
+route.post("/", createPost)
+route.get("/", getAllPosts)
+route.put("/:id", updatePost)
+route.put("/like/:id", likePost)
+route.get("/:id", getSinglePost)
+route.delete("/:id", deletePost)
+route.put("/deslike/:id", deslikePost)
 route.get("/search", getSearchedPosts)
-route.get("/get/:id", getSinglePost)
-route.get("/get/userposts/:user_id", getUserPosts)
-route.get("/mostviewed", getMostViewedPosts)
-route.delete("/delete/:id", deletePost)
-route.patch("/:id", updatePost)
+route.get("/user-posts/:user_id", getUserPosts)
+route.get("/page/:page", getAllPostsPagination)
+route.get("/category/:category_slug", getByCategory)
+route.get("/get/highlighted-post", getHighlightedPost)
+route.get("/get/most-views-post", getMostViewedPosts)
+
+// route.get("/test", testController)
 
 export = route

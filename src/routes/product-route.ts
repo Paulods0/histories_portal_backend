@@ -11,7 +11,7 @@ import {
 const route = Router()
 
 route.post("/", createProduct)
-route.get("/products", getAllProducts)
+route.get("/", getAllProducts)
 route.get("/product-cat", getProductsByCategory)
 route.get("/:id", getProductById)
 route.put("/:id", updateProduct)

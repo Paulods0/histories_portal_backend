@@ -7,7 +7,7 @@ import {
   getUsers,
   loginUser,
   updateUser,
-} from "../controllers/user-controller"
+} from "../controllers/auth-controller"
 import { checkValidation } from "../middlewares/checkValidation"
 
 const route = Router()
@@ -17,7 +17,7 @@ route.post("/", createUser)
 route.put("/forgetpassword", forgetPassword)
 route.get("/", getUsers)
 route.get("/:id", getSingleUser)
-route.patch("/:id", updateUser)
+route.put("/:id", updateUser)
 route.delete("/:id", deleteUser)
 
 export = route

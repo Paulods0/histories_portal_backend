@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import { UserModel } from "../models/auth-model"
 import * as bcrypt from "bcrypt"
 import * as jwt from "jsonwebtoken"
+import { User } from "../types"
 
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body
@@ -14,10 +15,13 @@ export const loginUser = async (req: Request, res: Response) => {
     }
 
     const user = await UserModel.findOne({ email }).populate("posts")
+
     if (!user) {
       return res.status(404).json({ message: "User not found" })
     }
+    //@ts-ignore
     const isPasswordCorrect = bcrypt.compareSync(password, user.password)
+
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Password incorrect" })
     }

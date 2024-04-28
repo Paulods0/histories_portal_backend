@@ -9,4 +9,4 @@ const PostCategorySchema = new Schema(
   { timestamps: true }
 )
 
-export const PostCategory = mongoose.model("PostCategory", PostCategorySchema)
+export const PostCategory = mongoose.model("Category", PostCategorySchema)

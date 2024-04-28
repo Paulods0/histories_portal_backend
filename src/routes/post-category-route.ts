@@ -9,10 +9,10 @@ import {
 
 const route = Router()
 
-route.post("/new", createPostCategory)
-route.get("/all", getAllPostCategories)
+route.post("/", createPostCategory)
+route.get("/", getAllPostCategories)
 route.get("/:id", getSinglePostCategory)
-route.delete("/:id", deletePostCategory)
 route.put("/:id", updatePostCategory)
+route.delete("/:id", deletePostCategory)
 
 export = route

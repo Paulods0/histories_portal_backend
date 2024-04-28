@@ -2,7 +2,6 @@ import { Request, Response } from "express"
 import { PostCategory } from "../models/post-category-model"
 import { PostModel } from "../models/post-model"
 
-//CREATE CATEGORY
 export const createPostCategory = async (req: Request, res: Response) => {
   const { name, creator } = req.body
   if (!name) {
@@ -24,7 +23,6 @@ export const createPostCategory = async (req: Request, res: Response) => {
     })
   }
 }
-//GET ALL CATEGORY
 export const getAllPostCategories = async (req: Request, res: Response) => {
   try {
     const categories = await PostCategory.find()
@@ -42,7 +40,6 @@ export const getAllPostCategories = async (req: Request, res: Response) => {
     })
   }
 }
-//GET SINGLE CATEGORY
 export const getSinglePostCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
@@ -59,7 +56,6 @@ export const getSinglePostCategory = async (req: Request, res: Response) => {
       .json({ error, err: "Erro ao tentar obter a categoria/tópico" })
   }
 }
-//DELTE SINGLE CATEGORY
 export const deletePostCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
@@ -80,7 +76,6 @@ export const deletePostCategory = async (req: Request, res: Response) => {
     })
   }
 }
-//UPDATE CATEGORY
 export const updatePostCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params

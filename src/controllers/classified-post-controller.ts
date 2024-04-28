@@ -2,23 +2,24 @@ import { Request, Response } from "express"
 import { ClassifiedPost } from "../types"
 import { ClassifiedPostModel } from "../models/classified-post-model"
 import { Types } from "mongoose"
-import { CategoryModel } from "../models/post-category-model"
+import { PostCategory } from "../models/post-category-model"
 
 export const createClassifiedsPost = async (
   req: Request<{}, {}, ClassifiedPost>,
   res: Response
 ) => {
   try {
-    const { author, category, content, mainImage, price, title } = req.body
-    if (!author || !category || !content || !mainImage || !price || !title) {
+    const { author, content, mainImage, price, title } = req.body
+    if (!author || !content || !mainImage || !price || !title) {
       return res.status(400).json({
         success: false,
         message: "Por favor preencha todos os campos obrigatórios.",
       })
     }
-
-    const existingCategory = await CategoryModel.findById(category)
-    const categoryName = existingCategory?.name.toLowerCase().replace("", "-")
+    
+    const CATEGORY = "660569dab133266bd148379e"
+    const existingCategory = await PostCategory.findById(CATEGORY)
+    const categoryName = existingCategory?.name.toLowerCase().replace(" ", "-")
 
     const newClassifiedPost = new ClassifiedPostModel({
       author,
@@ -125,20 +126,16 @@ export const updateClassifiedPost = async (
 
     await existingPost.updateOne({
       author: {
-        firstname: author.firstname
-          ? author.firstname
-          : existingPost?.author?.firstname,
-        lastname: author.lastname
-          ? author.lastname
-          : existingPost?.author?.lastname,
-        email: author.email ? author.email : existingPost?.author?.email,
-        phone: author.phone ? author.phone : existingPost?.author?.phone,
+        firstname: author.firstname,
+        lastname: author.lastname,
+        email: author.email,
+        phone: author.phone,
       },
-      category,
-      content,
+      category: category,
+      content: content,
       mainImage,
-      price,
-      title,
+      price: price,
+      title: title,
     })
 
     return res
