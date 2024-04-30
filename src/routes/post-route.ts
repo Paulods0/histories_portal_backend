@@ -9,7 +9,6 @@ import {
   getUserPosts,
   getByCategory,
   getSinglePost,
-  testController,
   getSearchedPosts,
   getMostViewedPosts,
   getAllPostsPagination,
