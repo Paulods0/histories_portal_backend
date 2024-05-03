@@ -2,10 +2,6 @@ import { Request, Response } from "express"
 import { SubscriberModel } from "../models/subscriber-model"
 import { PostModel } from "../models/post-model"
 import { createTransport } from "nodemailer"
-import hbs from "nodemailer-express-handlebars"
-import path from "path"
-import fs from "fs"
-import { error } from "winston"
 
 const registerSubscriber = async (req: Request, res: Response) => {
   const { email, name } = req.body
@@ -41,37 +37,36 @@ const sendEmail = async (req: Request, res: Response) => {
   const posts = await PostModel.find().limit(3).sort({ createdAt: -1 })
 
   try {
-    const htmlContent = fs.readFileSync("index.html", "utf-8")
-    for (let subscriber of subscribers) {
-      const transporter = createTransport({
-        service: "gmail",
-        auth: {
-          user: "overlandteste0@gmail.com",
-          pass: "rozdziylkkhwomdi",
-        },
-      })
+    const htmlContent = ""
 
-      const replacements = htmlContent.replace(
-        "%cancelarsubscrição%",
-        `http://localhost:5173/unsubscribe/${subscriber._id}`
-      )
+    const transporter = createTransport({
+      service: "gmail",
+      auth: {
+        user: "overlandteste0@gmail.com",
+        pass: "rozdziylkkhwomdi",
+      },
+    })
 
-      const mailOptions = {
-        from: "overlandteste0@gmail.com",
-        to: subscriber.email!!,
-        subject: "Overland Angola",
-        html: replacements,
-      }
+    const replacements = htmlContent.replace(
+      "%cancelarsubscrição%",
+      `http://localhost:5173/unsubscribe/${""}`
+    )
 
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error(error)
-          return res.status(400).json({ error })
-        }
-        console.log("Email enviado: " + info)
-        return res.status(200).json({ info })
-      })
+    const mailOptions = {
+      from: "overlandteste0@gmail.com",
+      to: "",
+      subject: "Overland Angola",
+      html: replacements,
     }
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error)
+        return res.status(400).json({ error })
+      }
+      console.log("Email enviado: " + info)
+      return res.status(200).json({ info })
+    })
   } catch (error) {
     console.error(error)
     return res.status(400).end()

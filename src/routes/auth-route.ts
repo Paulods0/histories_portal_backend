@@ -8,7 +8,6 @@ import {
   loginUser,
   updateUser,
 } from "../controllers/auth-controller"
-import { checkValidation } from "../middlewares/checkValidation"
 
 const route = Router()
 

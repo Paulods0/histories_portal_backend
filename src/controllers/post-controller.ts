@@ -269,9 +269,9 @@ const getUserPosts = async (
 const getMostViewedPosts = async (req: Request, res: Response) => {
   try {
     const posts = await PostModel.find().sort({ views: -1 })
-    res.status(200).json(posts)
+    return res.status(200).json(posts)
   } catch (error) {
-    res.json(error)
+    return res.status(400).json({ err: error })
   }
 }
 const getSearchedPosts = async (req: Request, res: Response) => {
@@ -393,7 +393,6 @@ const deslikePost = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Erro No Servidor" })
   }
 }
-
 const testController = async (req: Request, res: Response) => {
   const categoryId = req.query.category || ""
   // const search = req.query.name || ""

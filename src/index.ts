@@ -29,7 +29,6 @@ app.use("/api/v1/post-category", postCategoryRoute)
 app.use("/api/v1/classified-post", classifiedPostRoute)
 app.use("/api/v1/product-category", productCategoryRoute)
 
-
 app.listen(PORT, () => {
   console.log("Server is running on port " + PORT)
 })
