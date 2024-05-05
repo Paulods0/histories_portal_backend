@@ -64,9 +64,10 @@ const updateProductCategory = async (req: Request, res: Response) => {
     if (!category) {
       return res.status(404).json({ message: "A categoria não existe." })
     }
+
     const updatedCategory = await productCategoryModel.findOneAndUpdate(
       { _id: id },
-      { name: name ? name : category.name },
+      { name: name ?? category.name },
       { new: true }
     )
     res.status(200).json({

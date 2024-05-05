@@ -79,8 +79,8 @@ export const deletePostCategory = async (req: Request, res: Response) => {
 export const updatePostCategory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const { name, slug } = req.body
-    const category_slug = slug.trim().replace(" ", "-").toLowerCase()
+    const { name } = req.body
+    const category_slug = name.trim().replace(" ", "-").toLowerCase()
     const newCategory = await PostCategory.findOneAndUpdate(
       { _id: id },
       { name, slug: category_slug },
