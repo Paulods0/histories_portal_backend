@@ -1,5 +1,4 @@
 import { createTransport } from "nodemailer"
-import winston from "winston"
 import dotenv from "dotenv"
 dotenv.config()
 
