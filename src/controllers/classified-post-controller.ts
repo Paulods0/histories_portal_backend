@@ -16,7 +16,7 @@ export const createClassifiedsPost = async (
         message: "Por favor preencha todos os campos obrigatórios.",
       })
     }
-    
+
     const CATEGORY = "660569dab133266bd148379e"
     const existingCategory = await PostCategory.findById(CATEGORY)
     const categoryName = existingCategory?.name.toLowerCase().replace(" ", "-")

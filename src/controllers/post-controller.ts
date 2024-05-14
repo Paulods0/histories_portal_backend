@@ -335,6 +335,9 @@ const updatePost = async (req: Request, res: Response) => {
       if (currentlyHighlighted) {
         currentlyHighlighted.highlighted = false
         await currentlyHighlighted.save()
+      } else {
+        postExists.highlighted = true
+        await postExists.save()
       }
     }
 

@@ -38,6 +38,8 @@ export type SchedulePost = {
   file: string
 }
 
+export type Role = "admin" | "store-manager" | "publicator"
+
 export type User = {
   _id: string
   firstname: string
@@ -45,4 +47,5 @@ export type User = {
   image?: string
   email: string
   password: string
+  role: Role
 }

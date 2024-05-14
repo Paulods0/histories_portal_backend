@@ -6,6 +6,7 @@ import { productCategoryModel } from "../models/product-category-model"
 const createProduct = async (req: Request, res: Response) => {
   try {
     const { name, category, price, image, quantity } = req.body
+    
     if (!name || !category || !price || !image) {
       return res
         .status(400)
@@ -16,7 +17,7 @@ const createProduct = async (req: Request, res: Response) => {
       category: category,
       price: price,
       image: image,
-      quantity: quantity | 0,
+      quantity: quantity,
     })
     await product.save()
     res.status(201).json({ message: "O produto foi criado com sucesso " })

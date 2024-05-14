@@ -25,6 +25,8 @@ const ClassifiedSchema = new mongoose.Schema(
     },
     price: { type: String, required: true },
     category_slug: { type: String },
+    type: { type: String, required: true },
+    status: { type: String, required: true, default: "inactive" },
   },
   { timestamps: true }
 )
