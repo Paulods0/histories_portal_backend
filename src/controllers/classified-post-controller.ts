@@ -9,8 +9,8 @@ export const createClassifiedsPost = async (
   res: Response
 ) => {
   try {
-    const { author, content, mainImage, price, title } = req.body
-    if (!author || !content || !mainImage || !price || !title) {
+    const { author, content, mainImage, price, title, type } = req.body
+    if (!author || !content || !mainImage || !price || !title || !type) {
       return res.status(400).json({
         success: false,
         message: "Por favor preencha todos os campos obrigatórios.",
@@ -29,6 +29,7 @@ export const createClassifiedsPost = async (
       mainImage,
       price,
       category_slug: categoryName,
+      type,
     })
 
     await newClassifiedPost.save()
@@ -107,13 +108,10 @@ export const deleteClassifiedPost = async (
     return res.status(400).send({ message: "Erro no servidor: " + error })
   }
 }
-export const updateClassifiedPost = async (
-  req: Request<{ id: string }, {}, ClassifiedPost>,
-  res: Response
-) => {
+export const updateClassifiedPost = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const { author, category, content, mainImage, price, title } = req.body
+    const { newStatus, type } = req.body
 
     if (!Types.ObjectId.isValid(id)) {
       return res.status(400).json({ success: false, message: "Id inválido." })
@@ -121,22 +119,18 @@ export const updateClassifiedPost = async (
 
     const existingPost = await ClassifiedPostModel.findById(id)
     if (!existingPost) {
-      return
+      return res
+        .status(404)
+        .json({ success: false, message: "Post não encontrado" })
     }
 
-    await existingPost.updateOne({
-      author: {
-        firstname: author.firstname,
-        lastname: author.lastname,
-        email: author.email,
-        phone: author.phone,
+    await existingPost.updateOne(
+      {
+        type: type,
+        status: newStatus,
       },
-      category: category,
-      content: content,
-      mainImage,
-      price: price,
-      title: title,
-    })
+      { new: true }
+    )
 
     return res
       .status(200)

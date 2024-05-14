@@ -1,18 +1,22 @@
 import { SchemaType } from "mongoose"
 
+export type ClassifiedPostAuthor = {
+  firstname: string
+  lastname: string
+  email: string
+  phone: string
+}
+
 export type ClassifiedPost = {
   title: string
   mainImage: string
   content: string
-  author: {
-    firstname: string
-    lastname: string
-    email: string
-    phone: string
-  }
+  author: ClassifiedPostAuthor
   category: string
   price: string
   category_slug: string
+  type: "sell" | "buy"
+  status: "active" | "suspended" | "inactive"
 }
 
 export type Post = {

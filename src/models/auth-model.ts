@@ -1,6 +1,5 @@
 import mongoose, { Schema, Types } from "mongoose"
 
-export type Role = "admin" | "store-manager" | "publicator"
 
 const userSchema = new Schema(
   {
