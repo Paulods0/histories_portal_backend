@@ -68,7 +68,7 @@ export const getSinlgeClassifiedPost = async (
 }
 export const getAllClassifiedPost = async (req: Request, res: Response) => {
   try {
-    const posts = await ClassifiedPostModel.find()
+    const posts = await ClassifiedPostModel.find().sort({ createdAt: -1 })
     if (!posts || posts.length === 0) {
       return res
         .status(404)

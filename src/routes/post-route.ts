@@ -13,6 +13,7 @@ import {
   getMostViewedPosts,
   getAllPostsPagination,
   getHighlightedPost,
+  getMostLikedPosts,
 } from "../controllers/post-controller"
 
 const route = Router()
@@ -30,6 +31,7 @@ route.get("/page/:page", getAllPostsPagination)
 route.get("/category/:category_slug", getByCategory)
 route.get("/get/highlighted-post", getHighlightedPost)
 route.get("/get/most-views-post", getMostViewedPosts)
+route.get("/get/most-liked", getMostLikedPosts)
 
 // route.get("/test", testController)
 

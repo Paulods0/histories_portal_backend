@@ -48,14 +48,14 @@ const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
         .json({ success: false, message: "Categoria não encontrada." })
     }
     const postSlug = postCategory.name.toLowerCase().replace(" ", "-")
-    
+
     if (!Types.ObjectId.isValid(author_id)) {
       return res.status(400).json({
         success: false,
         message: "O id do usuário, não é um id válido.",
       })
     }
-    
+
     const post = new PostModel({
       title,
       content,
@@ -206,6 +206,7 @@ const getByCategory = async (
     const posts = await PostModel.find({
       category_slug: req.params.category_slug,
     })
+      .sort({ createdAt: -1 })
       .populate({
         path: "author",
         select: "_id firstname lastname image",
@@ -418,12 +419,28 @@ const testController = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Error", err: error })
   }
 }
+const getMostLikedPosts = async (req: Request, res: Response) => {
+  try {
+    const posts = await PostModel.find()
+      .populate({
+        path: "author",
+        select: "firstname lastname",
+      })
+      .sort({ rating: -1 })
+      .limit(3)
+    return res.status(200).json(posts)
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ message: "Error" + error })
+  }
+}
 
 export {
   createPost,
   getAllPosts,
   deletePost,
   getByCategory,
+  getMostLikedPosts,
   getAllPostsPagination,
   getSearchedPosts,
   getSinglePost,
