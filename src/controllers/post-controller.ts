@@ -48,7 +48,14 @@ const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
         .json({ success: false, message: "Categoria não encontrada." })
     }
     const postSlug = postCategory.name.toLowerCase().replace(" ", "-")
-
+    
+    if (!Types.ObjectId.isValid(author_id)) {
+      return res.status(400).json({
+        success: false,
+        message: "O id do usuário, não é um id válido.",
+      })
+    }
+    
     const post = new PostModel({
       title,
       content,
@@ -63,12 +70,6 @@ const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
       author_notes: author_notes,
     })
 
-    if (!Types.ObjectId.isValid(author_id)) {
-      return res.status(400).json({
-        success: false,
-        message: "O id do usuário, não é um id válido.",
-      })
-    }
     const user = await UserModel.findById({ _id: author_id })
     if (!user) {
       return res

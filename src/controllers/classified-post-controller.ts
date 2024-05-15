@@ -111,7 +111,7 @@ export const deleteClassifiedPost = async (
 export const updateClassifiedPost = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const { newStatus, type } = req.body
+    const { newStatus } = req.body
 
     if (!Types.ObjectId.isValid(id)) {
       return res.status(400).json({ success: false, message: "Id inválido." })
@@ -124,13 +124,7 @@ export const updateClassifiedPost = async (req: Request, res: Response) => {
         .json({ success: false, message: "Post não encontrado" })
     }
 
-    await existingPost.updateOne(
-      {
-        type: type,
-        status: newStatus,
-      },
-      { new: true }
-    )
+    await existingPost.updateOne({ status: newStatus }, { new: true })
 
     return res
       .status(200)
