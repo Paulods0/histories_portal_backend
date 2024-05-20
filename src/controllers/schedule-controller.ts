@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { SchedulePost } from "../types"
 import { ScheduleModel } from "../models/schedule-model"
-import { Schema, Types } from "mongoose"
+import { Types } from "mongoose"
 
 export const createSchedulePost = async (
   req: Request<{}, {}, SchedulePost>,

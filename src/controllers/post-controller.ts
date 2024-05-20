@@ -2,7 +2,6 @@ import { Request, Response } from "express"
 import { PostModel } from "../models/post-model"
 import { Types } from "mongoose"
 import { UserModel } from "../models/auth-model"
-import { PostCategory } from "../models/post-category-model"
 import { Post } from "../types"
 
 const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
@@ -37,17 +36,7 @@ const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
       }
     }
 
-    if (!Types.ObjectId.isValid(category)) {
-      return res.status(400).json({ success: false, message: "Id inválido." })
-    }
-
-    const postCategory = await PostCategory.findById(category)
-    if (!postCategory) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Categoria não encontrada." })
-    }
-    const postSlug = postCategory.name.toLowerCase().replace(" ", "-")
+    const postSlug = category.toLowerCase().replace(" ", "-")
 
     if (!Types.ObjectId.isValid(author_id)) {
       return res.status(400).json({
@@ -103,21 +92,11 @@ const getAllPosts = async (req: Request, res: Response) => {
           path: "author",
           select: "_id firstname lastname image",
         })
-        .populate({
-          path: "category",
-          select: "_id name",
-        })
     } else {
-      posts = await PostModel.find()
-        .sort({ createdAt: -1 })
-        .populate({
-          path: "author",
-          select: "_id firstname lastname image",
-        })
-        .populate({
-          path: "category",
-          select: "_id name",
-        })
+      posts = await PostModel.find().sort({ createdAt: -1 }).populate({
+        path: "author",
+        select: "_id firstname lastname image",
+      })
     }
 
     res.status(200).json(posts)
@@ -175,7 +154,7 @@ const getSinglePost = async (req: Request<{ id: string }>, res: Response) => {
     if (!Types.ObjectId.isValid(id)) {
       return res.status(400).json({ success: false, message: "Id inválido." })
     }
-    const post = await PostModel.findById(id).populate("category").populate({
+    const post = await PostModel.findById(id).populate({
       path: "author",
       select: "_id firstname lastname image",
     })
@@ -210,10 +189,6 @@ const getByCategory = async (
       .populate({
         path: "author",
         select: "_id firstname lastname image",
-      })
-      .populate({
-        path: "category",
-        select: ":_id name slug",
       })
     return res.status(200).json(posts)
   } catch (error) {
@@ -253,15 +228,10 @@ const getUserPosts = async (
       author: {
         _id: user_id,
       },
+    }).populate({
+      path: "author",
+      select: "_id firstname lastname image",
     })
-      .populate({
-        path: "author",
-        select: "_id firstname lastname image",
-      })
-      .populate({
-        path: "category",
-        select: "name _id",
-      })
 
     return res.json(posts)
   } catch (error) {
@@ -280,7 +250,6 @@ const getSearchedPosts = async (req: Request, res: Response) => {
   const value = req.query.value || "".toLowerCase()
   try {
     const posts = await PostModel.find()
-      .populate("category")
       .populate({
         path: "author",
         select: "firstname lastname",
@@ -343,6 +312,10 @@ const updatePost = async (req: Request, res: Response) => {
       }
     }
 
+    const slug = category
+      ? category.toLowerCase().replace(" ", "-")
+      : postExists.category_slug
+
     const newPost = await PostModel.findOneAndUpdate(
       { _id: id },
       {
@@ -356,6 +329,7 @@ const updatePost = async (req: Request, res: Response) => {
         longitude: longitude,
         author: author,
         author_notes: author_notes,
+        category_slug: slug,
       },
       { new: true }
     )
@@ -400,7 +374,6 @@ const deslikePost = async (req: Request, res: Response) => {
 }
 const testController = async (req: Request, res: Response) => {
   const categoryId = req.query.category || ""
-  // const search = req.query.name || ""
   try {
     const search = req.query.name || ""
     const postLimit = Number(req.query.limit || 5)

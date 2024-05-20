@@ -2,7 +2,6 @@ import { Request, Response } from "express"
 import { ClassifiedPost } from "../types"
 import { ClassifiedPostModel } from "../models/classified-post-model"
 import { Types } from "mongoose"
-import { PostCategory } from "../models/post-category-model"
 
 export const createClassifiedsPost = async (
   req: Request<{}, {}, ClassifiedPost>,
@@ -17,19 +16,18 @@ export const createClassifiedsPost = async (
       })
     }
 
-    const CATEGORY = "660569dab133266bd148379e"
-    const existingCategory = await PostCategory.findById(CATEGORY)
-    const categoryName = existingCategory?.name.toLowerCase().replace(" ", "-")
+    const CATEGORY = "classificados"
+    const slug = CATEGORY.toLowerCase().replace(" ", "-")
 
     const newClassifiedPost = new ClassifiedPostModel({
-      author,
-      title,
-      content,
-      category: existingCategory,
-      mainImage,
-      price,
-      category_slug: categoryName,
       type,
+      title,
+      price,
+      author,
+      content,
+      mainImage,
+      category_slug: slug,
+      category: CATEGORY,
     })
 
     await newClassifiedPost.save()

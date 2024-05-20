@@ -2,10 +2,10 @@ import mongoose, { Schema } from "mongoose"
 
 const Post = new Schema(
   {
-    category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },
     highlighted: { type: Boolean, required: true, default: false },
     mainImage: { type: String, required: true },
+    category: { type:String, required: true },
     content: { type: String, required: true },
     title: { type: String, required: true },
     rating: { type: Number, default: 0 },

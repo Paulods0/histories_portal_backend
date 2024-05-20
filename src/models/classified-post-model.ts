@@ -19,8 +19,7 @@ const ClassifiedSchema = new mongoose.Schema(
     mainImage: { type: String },
     content: { type: String, required: true },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      type: String,
       required: true,
     },
     price: { type: String, required: true },

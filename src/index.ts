@@ -4,7 +4,6 @@ import cors from "cors"
 import postRoute from "./routes/post-route"
 import authRoute from "./routes/auth-route"
 import productRoute from "./routes/product-route"
-import postCategoryRoute from "./routes/post-category-route"
 import scheduleRoute from "./routes/schedule-route"
 import subscriberRoute from "./routes/subscriber-route"
 import classifiedPostRoute from "./routes/classified-post-route"
@@ -25,7 +24,6 @@ app.use("/api/v1/post", postRoute)
 app.use("/api/v1/product", productRoute)
 app.use("/api/v1/newsletter", subscriberRoute)
 app.use("/api/v1/schedule-post", scheduleRoute)
-app.use("/api/v1/post-category", postCategoryRoute)
 app.use("/api/v1/classified-post", classifiedPostRoute)
 app.use("/api/v1/product-category", productCategoryRoute)
 
