@@ -1,14 +1,6 @@
 import mongoose, { Schema } from "mongoose"
 
-interface IProductSchema {
-  image: string
-  name: string
-  price: string
-  category: Schema.Types.ObjectId
-  quantity?: number
-}
-
-const productSchema = new mongoose.Schema<IProductSchema>(
+const productSchema = new mongoose.Schema(
   {
     image: { type: String, required: true },
     name: {
@@ -16,10 +8,10 @@ const productSchema = new mongoose.Schema<IProductSchema>(
       required: true,
     },
     category: {
-      type: Schema.Types.ObjectId,
-      ref: "ProductCategory",
+      type: String,
       required: true,
     },
+    slug: { type: String, required: true },
     price: {
       type: String,
       required: true,
@@ -32,7 +24,4 @@ const productSchema = new mongoose.Schema<IProductSchema>(
   { timestamps: true }
 )
 
-export const ProductModel = mongoose.model<IProductSchema>(
-  "Product",
-  productSchema
-)
+export const ProductModel = mongoose.model("Product", productSchema)

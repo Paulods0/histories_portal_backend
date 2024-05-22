@@ -78,32 +78,33 @@ const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
   }
 }
 const getAllPosts = async (req: Request, res: Response) => {
-  const { page } = req.query || 1
-  const postsPerPage = 4
-  const skip = postsPerPage * Number(page!!)
+  const page = parseInt(req.query.page as string, 10) || 1
+  const category = req.query.category
+  const limit = parseInt(req.query.limit as string) || 4
+
+  const skip = limit * (page - 1)
+
+  const filter = category ? { category_slug: category } : {}
+  const totalDocuments = await PostModel.countDocuments(filter)
+  const totalPages = Math.ceil(totalDocuments / limit)
+
   try {
-    let posts
-    if (req.query.page) {
-      posts = await PostModel.find()
-        .limit(postsPerPage)
-        .skip(skip)
-        .sort({ createdAt: -1 })
-        .populate({
-          path: "author",
-          select: "_id firstname lastname image",
-        })
-    } else {
-      posts = await PostModel.find().sort({ createdAt: -1 }).populate({
+    const posts = await PostModel.find(filter)
+      .limit(limit)
+      .skip(skip)
+      .sort({ createdAt: -1 })
+      .populate({
         path: "author",
         select: "_id firstname lastname image",
       })
-    }
 
-    res.status(200).json(posts)
+    res.status(200).json({ total: totalDocuments, pages: totalPages, posts })
   } catch (error) {
-    res
-      .status(404)
-      .json({ err: "Erro no servidor, por favor tente novamente!" })
+    console.error(error)
+    res.status(500).json({
+      err: "Erro no servidor, por favor tente novamente!",
+      message: error,
+    })
   }
 }
 const getAllPostsPagination = async (req: Request, res: Response) => {

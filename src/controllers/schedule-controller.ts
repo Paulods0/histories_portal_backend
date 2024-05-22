@@ -33,9 +33,22 @@ export const createSchedulePost = async (
 }
 
 export const getAllSchedulePosts = async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 1
+  const postPerPage = 12
+  const skip = postPerPage * (page - 1)
+
+  const totalPosts = await ScheduleModel.countDocuments()
+  const pages = Math.ceil(totalPosts / postPerPage)
+
   try {
-    const post = await ScheduleModel.find().sort({ createdAt: -1 })
-    return res.status(200).json({ success: true, data: post })
+    const post = await ScheduleModel.find()
+      .limit(postPerPage)
+      .skip(skip)
+      .sort({ createdAt: -1 })
+
+    return res
+      .status(200)
+      .json({ total: totalPosts, pages: pages, posts: post })
   } catch (error) {
     console.log("Erro no servidor: " + error)
     return res.status(400).json({ message: "Erro no servidor: " + error })

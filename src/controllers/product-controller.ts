@@ -3,20 +3,32 @@ import { ProductModel } from "../models/product-model"
 import { Types } from "mongoose"
 import { productCategoryModel } from "../models/product-category-model"
 
-const createProduct = async (req: Request, res: Response) => {
+interface CreateProduct {
+  name: string
+  category: string
+  price: string
+  image: string
+  quantity: number
+}
+const createProduct = async (
+  req: Request<{}, {}, CreateProduct>,
+  res: Response
+) => {
   try {
-    const { name, category, price, image, quantity } = req.body
-    
+    const { name, price, image, quantity, category } = req.body
+
     if (!name || !category || !price || !image) {
       return res
         .status(400)
         .json({ message: "Preencha todos os campos obrigatórios!" })
     }
+    const category_slug = category.toLowerCase().replace(" ", "-")
     const product = new ProductModel({
       name: name,
       category: category,
       price: price,
       image: image,
+      slug: category_slug,
       quantity: quantity,
     })
     await product.save()
@@ -26,16 +38,22 @@ const createProduct = async (req: Request, res: Response) => {
   }
 }
 const getAllProducts = async (req: Request, res: Response) => {
+  const category = req.query.category
+  const page = parseInt(req.query.page as string) || 1
+  const limit = parseInt(req.query.limit as string) || 4
+
+  const skip = limit * (page - 1)
+  const filter = category ? { slug: category } : {}
+
   try {
-    const products = await ProductModel.find()
-      .populate("category")
+    const totalDocuments = await ProductModel.countDocuments(filter)
+    const products = await ProductModel.find(filter)
       .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip)
 
-    if (!products || products.length === 0) {
-      return res.status(404).json(products)
-    }
-
-    res.status(200).json(products)
+    const pages = Math.ceil(totalDocuments / limit)
+    res.status(200).json({ pages: pages, products: products })
   } catch (error) {
     res.status(500).json({ err: "Erro no servidor: " + error })
   }
