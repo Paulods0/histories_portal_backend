@@ -2,14 +2,15 @@ import { Router } from "express"
 import {
   registerSubscriber,
   unregisterSubscriber,
-  sendEmail,
+  // sendEmail,
   getAllSubscribers,
+  sendMailToSubs,
 } from "../controllers/subscriber-controller"
 
 const router = Router()
 
 router.post("/register", registerSubscriber)
-router.post("/send/mail", sendEmail)
+router.post("/mail", sendMailToSubs)
 router.get("/", getAllSubscribers)
 router.delete("/unregister/:id", unregisterSubscriber)
 

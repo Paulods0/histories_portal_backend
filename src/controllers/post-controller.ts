@@ -3,6 +3,8 @@ import { PostModel } from "../models/post-model"
 import { Types } from "mongoose"
 import { UserModel } from "../models/auth-model"
 import { Post } from "../types"
+import { SubscriberModel } from "../models/subscriber-model"
+import { sendNewsletterPosts } from "../helpers"
 
 const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
   const {
@@ -68,6 +70,21 @@ const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
     await post.save()
     user.posts.push(post._id)
     await user?.save()
+
+    const lastPosts = await PostModel
+      .find()
+      .limit(3)
+      .sort({ createdAt: -1 })
+
+    const subscribers = await SubscriberModel.find()
+
+    let subsEmail: string[] = [""]
+    subscribers.forEach((sub) => {
+      subsEmail.push(sub.email!!)
+    })
+
+    await sendNewsletterPosts(subsEmail, lastPosts)
+
     res
       .status(201)
       .json({ success: true, message: "O post foi criado com sucesso." })

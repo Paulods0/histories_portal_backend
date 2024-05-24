@@ -40,7 +40,7 @@ const createProduct = async (
 const getAllProducts = async (req: Request, res: Response) => {
   const category = req.query.category
   const page = parseInt(req.query.page as string) || 1
-  const limit = parseInt(req.query.limit as string) || 4
+  const limit = parseInt(req.query.limit as string) || 12
 
   const skip = limit * (page - 1)
   const filter = category ? { slug: category } : {}
@@ -88,7 +88,7 @@ const getProductById = async (req: Request, res: Response) => {
 }
 const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params
-  const { name, category, price, quantity } = req.body
+  const { name, category, price, quantity, image } = req.body
   try {
     if (!Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "O id provido não é válido" })
@@ -105,6 +105,7 @@ const updateProduct = async (req: Request, res: Response) => {
         category: category ? category : product!!.category,
         price: price ? price : product!!.price,
         quantity: quantity ? quantity : product!!.quantity,
+        image: image ? image : product!!.image,
       },
       { new: true }
     )
