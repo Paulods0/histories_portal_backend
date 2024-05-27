@@ -37,13 +37,22 @@ const createProduct = async (
     res.status(500).send({ erro: "Erro no servidor: " + error })
   }
 }
+
 const getAllProducts = async (req: Request, res: Response) => {
   const category = req.query.category
   const page = parseInt(req.query.page as string) || 1
   const limit = parseInt(req.query.limit as string) || 12
+  const price = req.query.price
 
   const skip = limit * (page - 1)
-  const filter = category ? { slug: category } : {}
+  let filter: any = {}
+
+  if (category) {
+    filter.slug = category
+  }
+  if (price) {
+    filter.price = { $lte: price }
+  }
 
   try {
     const totalDocuments = await ProductModel.countDocuments(filter)
