@@ -71,10 +71,7 @@ const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
     user.posts.push(post._id)
     await user?.save()
 
-    const lastPosts = await PostModel
-      .find()
-      .limit(3)
-      .sort({ createdAt: -1 })
+    const lastPosts = await PostModel.find().limit(3).sort({ createdAt: -1 })
 
     const subscribers = await SubscriberModel.find()
 
@@ -97,7 +94,7 @@ const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
 const getAllPosts = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string, 10) || 1
   const category = req.query.category
-  const limit = parseInt(req.query.limit as string) || 4
+  const limit = 12
 
   const skip = limit * (page - 1)
 
