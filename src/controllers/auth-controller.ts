@@ -5,6 +5,8 @@ import * as jwt from "jsonwebtoken"
 import { User } from "../types"
 import { UpdateUser } from "../types/update"
 import { PostModel } from "../models/post-model"
+import { BuyProductData, buyProduct, welcomeUserMail } from "../helpers"
+import { StringExpressionOperatorReturningArray } from "mongoose"
 
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body
@@ -170,3 +172,53 @@ export const forgetPassword = async (req: Request, res: Response) => {
     return res.status(400).json(error)
   }
 }
+
+export const testAuthMail = async (req: Request, res: Response) => {
+  try {
+    const { email, firstname, lastname, password, role } = req.body
+    const user = {
+      email,
+      firstname,
+      lastname,
+      password,
+      role,
+      roleInfo: "",
+    }
+    let roleInfo = ""
+    if (role === "admin") {
+      roleInfo =
+        "ter acesso à todas as funcionalidades do site, tais como: adicionar novos usuários e fazer a gestão dos mesmos, publicar, editar e remover posts, fazer a gestão da loja (adicionar produtos e removê-los)."
+    } else if (role === "publicator") {
+      roleInfo =
+        "fazer publicações bem como gerir as mesmas. Não poderá adicionar novos usuários nem gerir os produtos da loja."
+    } else {
+      roleInfo =
+        "fazer a gestão dos produtos da loja. Não poderá fazer publicações nem adicionar novos usuários."
+    }
+    await welcomeUserMail({ ...user, roleInfo: roleInfo })
+    return res
+      .status(200)
+      .json({ message: `Email enviado com sucesso para: ${email}`, user })
+  } catch (error) {
+    return res.status(400).json(error)
+    console.log(error)
+  }
+}
+
+// export const testAuthMail = async (
+//   req: Request<{}, {}, BuyProductData>,
+//   res: Response
+// ) => {
+//   try {
+//     const { product, user } = req.body
+
+//     await buyProduct({ product, user })
+
+//     return res
+//       .status(200)
+//       .json({ message: `Email enviado com sucesso para: ${user.email}`, user })
+//   } catch (error) {
+//     return res.status(400).json(error)
+//     console.log(error)
+//   }
+// }

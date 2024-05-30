@@ -1,0 +1,38 @@
+<table style="width: 400px; padding: 0; margin: 30px auto">
+  <tr>
+    <td
+      style="
+        text-align: center;
+        width: 100%;
+        padding: 0;
+        border: 1px solid #ececec;
+      "
+    >
+      <img
+        style="object-fit: contain; width: 100%; height: 220px"
+        src="https://firebasestorage.googleapis.com/v0/b/history-post.appspot.com/o/products%2F1711464231671300499_81.jpg?alt=media&token=be82bd95-6b43-4de1-a014-0add99d7ca74"
+        alt="imagem-do-produto"
+      />
+
+      <ul
+        style="
+          color: white;
+          font-size: 16px;
+          margin-bottom: 0;
+          list-style: none;
+          padding: 10px 8px;
+          background-color: #02232b;
+        "
+      >
+        <div style="text-align: start">
+          <li>Nome: <strong> <%= product.name %></strong></li>
+          <li>Quantidade <strong> <%= product.quantity %> </strong></li>
+        </div>
+
+        <div style="text-align: end; padding-right: 8px">
+          <li>Total: <strong> <%= product.totalPrice %>kz </strong></li>
+        </div>
+      </ul>
+    </td>
+  </tr>
+</table>

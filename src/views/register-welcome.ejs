@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome</title>
+    <style>
+      p {
+        color: black;
+      }
+      li {
+        list-style: none;
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <table style="width: 100%; padding: 0px; background-color: #ededed">
+      <tr>
+        <td>
+          <table
+            style="
+              width: 800px;
+              text-align: center;
+              background-color: white;
+              margin: 0 auto;
+            "
+          >
+            <tr>
+              <td style="padding: 20px; width: 100%; text-align: center">
+                <img
+                  style="
+                    width: 350px;
+                    height: 220px;
+                    object-fit: contain;
+                    align-self: center;
+                  "
+                  src="https://firebasestorage.googleapis.com/v0/b/history-post.appspot.com/o/newsletter-images%2Flogotipo-texto.png?alt=media&token=924c42ce-61d6-4cd6-b507-b4f89a1f4444"
+                  alt="logo"
+                />
+                <div
+                  style="
+                    margin-top: 16px;
+                    width: 100%;
+                    background-color: transparent;
+                    text-align: start;
+                    font-size: 16px;
+                  "
+                >
+                  <p>
+                    Olá, <span> <%= user.firstname %> </span>
+                    <span> <%= user.lastname %> </span>
+                  </p>
+
+                  <p style="color: black">
+                    Seja muito bem-vindo ao Overland Angola. Foi adicionado como
+                    novo administrador do site. Eis os seus dados de acesso e
+                    algumas informações:
+                  </p>
+                  <ul
+                    style="
+                      width: fit;
+                      padding: 10px;
+                      border-radius: 16px;
+                      background-color: #edededed;
+                    "
+                  >
+                    <li>
+                      <strong>Email:</strong>
+                      <span> <%= user.email %> </span>
+                    </li>
+
+                    <li>
+                      <strong>Password:</strong>
+                      <span> <%= user.password %> </span>
+                    </li>
+
+                    <li>
+                      <strong>Role:</strong>
+                      <span> <%= user.role %> </span>
+                    </li>
+                  </ul>
+                  <p>
+                    <strong>NOTA:</strong> A role
+                    <strong> <%= user.role %> </strong> permite-lhe <%=
+                    user.roleInfo %>
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  background-color: #02232b;
+                  padding: 12px 0;
+                  text-align: center;
+                "
+              >
+                <h3
+                  style="
+                    font-size: 18px;
+                    color: white;
+                    font-size: 20px;
+                    text-transform: uppercase;
+                  "
+                >
+                  Explorar O Site Overland Angola
+                </h3>
+
+                <a href="https://facebook.com" style="text-decoration: none">
+                  <img
+                    style="width: 40px; height: 40px; object-fit: cover"
+                    src="https://firebasestorage.googleapis.com/v0/b/history-post.appspot.com/o/newsletter-images%2Fface.png?alt=media&token=bc2a4dd8-d356-4e96-bdfd-a1cd7bdc3e16"
+                    alt="facebook-icon"
+                  />
+                </a>
+
+                <a
+                  href="https://instagram.com"
+                  style="margin: 0 15px; text-decoration: none"
+                >
+                  <img
+                    style="width: 40px; height: 40px; object-fit: cover"
+                    src="https://firebasestorage.googleapis.com/v0/b/history-post.appspot.com/o/newsletter-images%2Finsta.png?alt=media&token=d8a797b3-9615-44ef-af8c-8ecc9bfaa1f9"
+                    alt="instagram-icon"
+                  />
+                </a>
+
+                <a href="https://youtube.com" style="text-decoration: none">
+                  <img
+                    style="width: 40px; height: 40px; object-fit: cover"
+                    src="https://firebasestorage.googleapis.com/v0/b/history-post.appspot.com/o/newsletter-images%2Fyoutube.png?alt=media&token=e055c956-457e-4895-9443-1548ecae811a"
+                    alt="youtube-icon"
+                  />
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align: center">
+                <p style="font-style: italic; font-size: 14px">
+                  &copy; Todos os direitos reservados.
+                </p>
+                <p style="font-size: 14px">O nosso endereço postal é:</p>
+                <p style="font-size: 14px">Angola, Luanda</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

@@ -19,19 +19,30 @@
               <td align="center" style="padding: 10px">
                 <img
                   style="width: 600px; height: 140px; object-fit: contain"
-                  src="https://firebasestorage.googleapis.com/v0/b/history-post.appspot.com/o/newsletter-images%2Flogotipo-texto.png?alt=media&token=971a1496-8742-4e3a-91a4-b93132350a6b"
+                  src="https://firebasestorage.googleapis.com/v0/b/history-post.appspot.com/o/newsletter-images%2Flogotipo-texto.png?alt=media&token=924c42ce-61d6-4cd6-b507-b4f89a1f4444"
                   alt="logo"
                 />
               </td>
             </tr>
 
-            <% posts.forEach((post)=>{ %> <%-
-            include('post-card.ejs',{post:post}) %> <% }) %>
+            <% posts.forEach((post)=>{ %> 
+              <%- include('post-card.ejs',{post:post}) %> 
+            <% }) %>
 
             <tr>
-              <td style="background-color: black; padding: 12px; height: 160px">
+              <td
+                style="background-color: #02232b; padding: 12px; height: 160px"
+              >
                 <h1 style="text-decoration: none; color: white">
-                  <a href="#" style="text-decoration: none; color: white">
+                  <a
+                    href="#"
+                    style="
+                      text-decoration: none;
+                      color: white;
+                      text-transform: uppercase;
+                      font-size: 20px;
+                    "
+                  >
                     Explorar o site Overland Angola
                   </a>
                 </h1>
@@ -70,17 +81,19 @@
             </tr>
             <tr>
               <td>
-                <p style="font-style: italic; font-size: 14px;">&copy; Todos os direitos reservados.</p>
-                <p style="font-size: 14px;">O nosso endereço postal é:</p>
-                <p style="font-size: 14px;">Condomínio Talatona Boulevard, Talatona, Angola</p>                
+                <p style="font-style: italic; font-size: 14px">
+                  &copy; Todos os direitos reservados.
+                </p>
+                <p style="font-size: 14px">O nosso endereço postal é:</p>
+                <p style="font-size: 14px">Angola, Luanda</p>
               </td>
             </tr>
 
             <tr>
               <td>
-                <a href="#" style="font-size: 14px; padding-bottom: 6px;">
+                <a href="#" style="font-size: 14px; padding-bottom: 6px">
                   cancelar subscrição
-                </a>                
+                </a>
               </td>
             </tr>
           </table>
