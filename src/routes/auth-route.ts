@@ -14,7 +14,7 @@ const route = Router()
 
 route.post("/login", loginUser)
 route.post("/", createUser)
-route.post("/mail/teste", testAuthMail)
+// route.post("/mail/teste", testAuthMail)
 route.put("/forgetpassword", forgetPassword)
 route.get("/", getUsers)
 route.get("/:id", getSingleUser)

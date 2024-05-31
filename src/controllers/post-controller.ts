@@ -94,11 +94,12 @@ const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
 const getAllPosts = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string, 10) || 1
   const category = req.query.category
-  const limit = 12
+  const limit = 16
 
   const skip = limit * (page - 1)
 
   const filter = category ? { category_slug: category } : {}
+
   const totalDocuments = await PostModel.countDocuments(filter)
   const totalPages = Math.ceil(totalDocuments / limit)
 
@@ -121,48 +122,7 @@ const getAllPosts = async (req: Request, res: Response) => {
     })
   }
 }
-const getAllPostsPagination = async (req: Request, res: Response) => {
-  const postsPerPage = 7
-  const page = req.params.page || 1
-  const skipp = postsPerPage * Number(page)
 
-  try {
-    const totalPosts = await PostModel.countDocuments()
-    let posts
-    if (req.params.page) {
-      posts = await PostModel.find()
-        .sort({ createdAt: -1 })
-        .populate({
-          path: "author",
-          select: "_id firstname lastname image",
-        })
-        .populate({
-          path: "category",
-          select: "_id name",
-        })
-        .limit(postsPerPage)
-        .skip(skipp)
-    } else {
-      posts = await PostModel.find()
-        .sort({ createdAt: -1 })
-        .populate({
-          path: "author",
-          select: "_id firstname lastname image",
-        })
-        .populate({
-          path: "category",
-          select: "_id name",
-        })
-    }
-
-    const totalPages = Math.floor(totalPosts / postsPerPage)
-    return res.status(200).json({ pages: totalPages, posts })
-  } catch (error) {
-    res
-      .status(404)
-      .json({ err: "Erro no servidor, por favor tente novamente!" })
-  }
-}
 const getSinglePost = async (req: Request<{ id: string }>, res: Response) => {
   try {
     const { id } = req.params
@@ -387,26 +347,6 @@ const deslikePost = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Erro No Servidor" })
   }
 }
-const testController = async (req: Request, res: Response) => {
-  const categoryId = req.query.category || ""
-  try {
-    const search = req.query.name || ""
-    const postLimit = Number(req.query.limit || 5)
-    const posts = await PostModel.find({
-      title: { $regex: search, $options: "i" },
-    })
-      .where("category")
-      .equals(categoryId)
-      .limit(postLimit)
-
-    if (!posts) {
-      return res.status(404).json({ message: "Not foud", posts })
-    }
-    return res.status(200).json(posts)
-  } catch (error) {
-    return res.status(400).json({ message: "Error", err: error })
-  }
-}
 const getMostLikedPosts = async (req: Request, res: Response) => {
   try {
     const posts = await PostModel.find()
@@ -424,19 +364,17 @@ const getMostLikedPosts = async (req: Request, res: Response) => {
 }
 
 export {
-  createPost,
-  getAllPosts,
-  deletePost,
-  getByCategory,
-  getMostLikedPosts,
-  getAllPostsPagination,
-  getSearchedPosts,
-  getSinglePost,
-  getUserPosts,
-  getHighlightedPost,
-  updatePost,
-  getMostViewedPosts,
   likePost,
+  createPost,
+  deletePost,
+  updatePost,
+  getAllPosts,
   deslikePost,
-  testController,
+  getUserPosts,
+  getByCategory,
+  getSinglePost,
+  getSearchedPosts,
+  getMostLikedPosts,
+  getHighlightedPost,
+  getMostViewedPosts,
 }

@@ -145,12 +145,7 @@ export const deleteUser = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "usuário não encontrado" })
     }
 
-    const postsToDelete = user.posts
-    if (postsToDelete) {
-      await PostModel.deleteMany(postsToDelete)
-    }
-
-    await UserModel.findOneAndDelete({ _id: id })
+    await user.deleteOne()
     res.status(200).json({ message: "Usuário removido com sucesso" })
   } catch (error) {
     res.status(400).json({ error: error, message: "Erro ao remover o usuário" })

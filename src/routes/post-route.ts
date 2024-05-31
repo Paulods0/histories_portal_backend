@@ -10,10 +10,9 @@ import {
   getByCategory,
   getSinglePost,
   getSearchedPosts,
-  getMostViewedPosts,
-  getAllPostsPagination,
-  getHighlightedPost,
   getMostLikedPosts,
+  getMostViewedPosts,
+  getHighlightedPost,
 } from "../controllers/post-controller"
 
 const route = Router()
@@ -24,15 +23,12 @@ route.put("/:id", updatePost)
 route.put("/like/:id", likePost)
 route.get("/:id", getSinglePost)
 route.delete("/:id", deletePost)
-route.put("/deslike/:id", deslikePost)
 route.get("/search", getSearchedPosts)
+route.put("/deslike/:id", deslikePost)
 route.get("/user-posts/:user_id", getUserPosts)
-route.get("/page/:page", getAllPostsPagination)
-route.get("/category/:category_slug", getByCategory)
-route.get("/get/highlighted-post", getHighlightedPost)
-route.get("/get/most-views-post", getMostViewedPosts)
 route.get("/get/most-liked", getMostLikedPosts)
-
-// route.get("/test", testController)
+route.get("/category/:category_slug", getByCategory)
+route.get("/get/most-views-post", getMostViewedPosts)
+route.get("/get/highlighted-post", getHighlightedPost)
 
 export = route

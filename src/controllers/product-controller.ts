@@ -9,13 +9,14 @@ interface CreateProduct {
   price: string
   image: string
   quantity: number
+  description?: string
 }
 const createProduct = async (
   req: Request<{}, {}, CreateProduct>,
   res: Response
 ) => {
   try {
-    const { name, price, image, quantity, category } = req.body
+    const { name, price, image, quantity, category, description } = req.body
 
     if (!name || !category || !price || !image) {
       return res
@@ -25,11 +26,12 @@ const createProduct = async (
     const category_slug = category.toLowerCase().replace(" ", "-")
     const product = new ProductModel({
       name: name,
-      category: category,
       price: price,
       image: image,
-      slug: category_slug,
       quantity: quantity,
+      category: category,
+      slug: category_slug,
+      description: description,
     })
     await product.save()
     res.status(201).json({ message: "O produto foi criado com sucesso " })
@@ -41,7 +43,7 @@ const createProduct = async (
 const getAllProducts = async (req: Request, res: Response) => {
   const category = req.query.category
   const page = parseInt(req.query.page as string) || 1
-  const limit = 12
+  const limit = 40
 
   const skip = limit * (page - 1)
 
@@ -90,7 +92,7 @@ const getProductById = async (req: Request, res: Response) => {
 }
 const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params
-  const { name, category, price, quantity, image } = req.body
+  const { name, category, price, quantity, image, description } = req.body
   try {
     if (!Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "O id provido não é válido" })
@@ -103,11 +105,12 @@ const updateProduct = async (req: Request, res: Response) => {
     const updatedProduct = await ProductModel.findOneAndUpdate(
       { _id: id },
       {
+        description: description,
         name: name ? name : product!!.name,
-        category: category ? category : product!!.category,
         price: price ? price : product!!.price,
-        quantity: quantity ? quantity : product!!.quantity,
         image: image ? image : product!!.image,
+        category: category ? category : product!!.category,
+        quantity: quantity ? quantity : product!!.quantity,
       },
       { new: true }
     )
