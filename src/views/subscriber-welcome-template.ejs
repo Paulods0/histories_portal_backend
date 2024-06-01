@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <table
+      width="100%"
+      style="padding: 0px; margin: 0px; background-color: #dddddd"
+    >
+      <tr>
+        <td>
+          <table
+            width="600px:"
+            style="padding: 0px; margin: 0 auto; background-color: #fff"
+          >
+            <%- include('./components/logotipo.ejs') %>
+
+            <tr>
+              <td style="padding: 50px 20px">
+                <p style="text-align: justify; color: black;">
+                  Olá, <%= data.name %>, bem-vindo à Overland Angola!
+                  <br />
+                  <br />
+                  Estamos entusiasmados por tê-lo(a) conosco.
+                  <br />
+                  <br />
+                  Na Overland Angola, exploramos juntos as maravilhas do nosso
+                  país, descobrindo lugares incríveis, partilhando histórias
+                  fascinantes e celebrando a rica cultura angolana. Prepare-se
+                  para receber conteúdos exclusivos, dicas de viagem, novidades
+                  sobre eventos e muito mais. A sua jornada para explorar o
+                  melhor de Angola começa agora. Obrigado por se juntar a nós.
+                  Vamos desbravar este caminho juntos!
+                </p>
+              </td>
+            </tr>
+
+            <%- include('./sections/explore-section.ejs') %> <%-
+            include('./sections/footer-section.ejs') %>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

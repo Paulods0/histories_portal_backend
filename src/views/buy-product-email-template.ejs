@@ -71,66 +71,14 @@
 
             <tr>
               <td style="width: 100%; text-align: center">
-                <% data.product.forEach((product)=>{ %> <%-
-                include('store-product.ejs', { product: product}) %> <% }) %>
+                <% data.products.forEach((product)=>{ %> 
+                  <%- include('./components/product-card.ejs', { product: product}) %> 
+                <% }) %>
               </td>
             </tr>
-            <tr>
-              <td
-                style="
-                  background-color: #02232b;
-                  padding: 12px 0;
-                  text-align: center;
-                "
-              >
-                <h3
-                  style="
-                    font-size: 18px;
-                    color: white;
-                    font-size: 20px;
-                    text-transform: uppercase;
-                  "
-                >
-                  Explorar O Site Overland Angola
-                </h3>
 
-                <a href="https://facebook.com" style="text-decoration: none">
-                  <img
-                    style="width: 40px; height: 40px; object-fit: cover"
-                    src="https://firebasestorage.googleapis.com/v0/b/history-post.appspot.com/o/newsletter-images%2Fface.png?alt=media&token=bc2a4dd8-d356-4e96-bdfd-a1cd7bdc3e16"
-                    alt="facebook-icon"
-                  />
-                </a>
-
-                <a
-                  href="https://instagram.com"
-                  style="margin: 0 15px; text-decoration: none"
-                >
-                  <img
-                    style="width: 40px; height: 40px; object-fit: cover"
-                    src="https://firebasestorage.googleapis.com/v0/b/history-post.appspot.com/o/newsletter-images%2Finsta.png?alt=media&token=d8a797b3-9615-44ef-af8c-8ecc9bfaa1f9"
-                    alt="instagram-icon"
-                  />
-                </a>
-
-                <a href="https://youtube.com" style="text-decoration: none">
-                  <img
-                    style="width: 40px; height: 40px; object-fit: cover"
-                    src="https://firebasestorage.googleapis.com/v0/b/history-post.appspot.com/o/newsletter-images%2Fyoutube.png?alt=media&token=e055c956-457e-4895-9443-1548ecae811a"
-                    alt="youtube-icon"
-                  />
-                </a>
-              </td>
-            </tr>
-            <tr>
-              <td style="text-align: center">
-                <p style="font-style: italic; font-size: 14px">
-                  &copy; Todos os direitos reservados.
-                </p>
-                <p style="font-size: 14px">O nosso endereço postal é:</p>
-                <p style="font-size: 14px">Angola, Luanda</p>
-              </td>
-            </tr>
+          <%- include('./sections/explore-section.ejs') %>
+          <%- include('./sections/footer-section.ejs') %>
           </table>
         </td>
       </tr>

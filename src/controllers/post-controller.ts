@@ -4,7 +4,7 @@ import { Types } from "mongoose"
 import { UserModel } from "../models/auth-model"
 import { Post } from "../types"
 import { SubscriberModel } from "../models/subscriber-model"
-import { sendNewsletterPosts } from "../helpers"
+import { EmailProps, mailSend } from "../helpers"
 
 const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
   const {
@@ -80,7 +80,15 @@ const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
       subsEmail.push(sub.email!!)
     })
 
-    await sendNewsletterPosts(subsEmail, lastPosts)
+    const data: EmailProps = {
+      to: subsEmail,
+      data: lastPosts,
+      subject: "Newsletter",
+      from: "overlandangolateste@gmail.com",
+      template: "newsletter-posts-template.ejs",
+    }
+
+    await mailSend(data)
 
     res
       .status(201)

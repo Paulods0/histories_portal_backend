@@ -1,30 +1,48 @@
 import { Request, Response } from "express"
+import { EmailProps, mailSend } from "../helpers"
 import { SubscriberModel } from "../models/subscriber-model"
-import { PostModel } from "../models/post-model"
-import { createTransport } from "nodemailer"
-import ejs from "ejs"
-import { sendEmail, sendNewsletterPosts } from "../helpers"
 
 const registerSubscriber = async (req: Request, res: Response) => {
-  const { email, name } = req.body
-  if (!email || !name) {
-    return res
-      .status(400)
-      .json({ message: "Preencha todos os campos obrigatórios" })
-      .end()
-  }
-  const existingSubscriber = await SubscriberModel.findOne({ email })
-  if (existingSubscriber) {
-    return res
-      .status(400)
-      .json({ message: "Este email já existe, por favor tente outro" })
-      .end()
-  }
+  try {
+    const { email, name, phone, country, countryCode } = req.body
+    if (!email || !name) {
+      return res
+        .status(400)
+        .json({ message: "Preencha todos os campos obrigatórios" })
+        .end()
+    }
+    const existingSubscriber = await SubscriberModel.findOne({ email })
+    if (existingSubscriber) {
+      return res
+        .status(400)
+        .json({ message: "Este email já existe, por favor tente outro" })
+        .end()
+    }
 
-  const subscriber = new SubscriberModel({ email, name })
-  await subscriber.save()
-  sendEmail(subscriber.email!!, subscriber.name!!)
-  return res.status(200).json(subscriber)
+    const subscriber = new SubscriberModel({
+      email,
+      name,
+      phone,
+      country,
+      countryCode,
+    })
+    await subscriber.save()
+    const data: EmailProps = {
+      data: {
+        email: subscriber.email,
+        name: subscriber.name,
+      },
+      from: "overlandteste0@gmail.com",
+      subject: "Bem-vindo ao Overland Angola",
+      template: "subscriber-welcome-template.ejs",
+      to: subscriber.email!!,
+    }
+    await mailSend(data)
+
+    return res.status(200).json(subscriber)
+  } catch (error) {
+    return res.status(400).json({ error })
+  }
 }
 
 const unregisterSubscriber = async (req: Request, res: Response) => {
@@ -45,27 +63,5 @@ const getAllSubscribers = async (req: Request, res: Response) => {
     return res.status(400).end()
   }
 }
-const sendMailToSubs = async (req: Request, res: Response) => {
-  const posts = await PostModel.find().limit(3)
-  const subscribers = await SubscriberModel.find()
 
-  let emails: string[] = [""]
-  subscribers.forEach((sub) => {
-    emails.push(sub.email!!)
-  })
-
-  await sendNewsletterPosts(emails, posts)
-  return res.status(200).json({ message: "Email enviado" })
-  try {
-  } catch (error) {
-    console.error(error)
-    return res.status(400).json(error)
-  }
-}
-
-export {
-  registerSubscriber,
-  unregisterSubscriber,
-  getAllSubscribers,
-  sendMailToSubs,
-}
+export { registerSubscriber, unregisterSubscriber, getAllSubscribers }

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quero ser vosso</title>
+  </head>
+  <body>
+    <table style="width: 100%; background: #ddd">
+      <tr>
+        <td style="padding: 0px; margin: 0px">
+          <table style="width: 600px; margin: 0 auto; background-color: #fff">
+            <%- include('./components/logotipo.ejs') %>
+            <ul style="list-style: none">
+              <li><span>Nome:</span> <span> <%= data.name %> </span></li>
+              <li><span>Email:</span> <span> <%= data.email %> </span></li>
+              <li>
+                <span>País:</span>
+              </li>
+              <li>
+                <span> <%= data.country %> </span>
+              </li>
+              <li>
+                <span>Nº de telefone: </span> <span> <%= data.phone %> </span>
+              </li>
+            </ul>
+            <p style="width: 100%; padding: 0 50px; color: black">
+              <%= data.description %>
+            </p>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

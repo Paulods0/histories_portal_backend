@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Newsletter</title>
+  </head>
+  <body>
+    <table width="100%" padding="0" style="background-color: #e3e3e3">
+      <tr>
+        <td align="center" style="text-align: center">
+          <table
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="width: 600px; margin: 0 auto; background-color: #fff"
+          >
+           <%- include('./components/logotipo.ejs') %>
+
+            <% posts.forEach((post)=>{ %> 
+              <%- include('./components/post-card.ejs',{post:post}) %> 
+            <% }) %>
+
+           <%- include('./sections/explore-section.ejs') %>
+           <%- include('./sections/footer-section.ejs') %>
+          
+            <tr>
+              <td>
+                <a href="#" style="font-size: 14px; padding-bottom: 6px">
+                  cancelar subscrição
+                </a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
