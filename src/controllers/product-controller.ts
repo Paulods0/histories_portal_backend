@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import { ProductModel } from "../models/product-model"
 import { Types } from "mongoose"
 import { productCategoryModel } from "../models/product-category-model"
+import { EmailProps, mailSend } from "../helpers"
 
 interface CreateProduct {
   name: string
@@ -39,7 +40,6 @@ const createProduct = async (
     res.status(500).send({ erro: "Erro no servidor: " + error })
   }
 }
-
 const getAllProducts = async (req: Request, res: Response) => {
   const category = req.query.category
   const page = parseInt(req.query.page as string) || 1
@@ -138,12 +138,57 @@ const deleteProduct = async (req: Request, res: Response) => {
     res.status(500).json({ err: "Erro no servidor: " + error })
   }
 }
+type BodyProps = {
+  user: {
+    name: string
+    email: string
+    phone: string | number
+  }
+  products: {
+    name: string
+    totalPrice: string
+    storeQuantity: number
+  }[]
+}
+const buyProduct = async (req: Request<{}, {}, BodyProps>, res: Response) => {
+  try {
+    const { user, products } = req.body
+
+    const formatedProducts = products.map((product) => {
+      return {
+        ...product,
+        totalPrice: new Intl.NumberFormat("pt-PT", {
+          style: "currency",
+          currency: "AKZ",
+        }).format(Number(product.totalPrice)),
+      }
+    })
+
+    const data: EmailProps = {
+      data: {
+        user,
+        products: formatedProducts,
+      },
+      from: user.email,
+      to: "pauloluguenda0@gmail.com",
+      subject: "COMPRA DE ARTIGO(S)",
+      template: "buy-product-email-template.ejs",
+    }
+
+    await mailSend(data)
+
+    return res.status(200).end()
+  } catch (error) {
+    return res.status(400).json({ error })
+  }
+}
 
 export {
+  buyProduct,
+  deleteProduct,
+  updateProduct,
   createProduct,
   getAllProducts,
   getProductById,
-  updateProduct,
-  deleteProduct,
   getProductsByCategory,
 }

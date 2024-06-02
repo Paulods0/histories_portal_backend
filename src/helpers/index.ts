@@ -31,11 +31,9 @@ export async function mailSend(emailProps: EmailProps) {
             from: emailProps.from,
             html: template,
           }
-          transporter.sendMail(options, (error, info) => {
+          transporter.sendMail(options, (error, _) => {
             if (error) {
               throw new Error(String(error))
-            } else {
-              console.log(info)
             }
           })
         }

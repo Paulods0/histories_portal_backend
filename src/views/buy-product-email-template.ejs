@@ -39,8 +39,7 @@
                   </h1>
                   <li>
                     <strong>Nome:</strong>
-                    <span> <%= data.user.firstname %> </span>
-                    <span> <%= data.user.lastname %> </span>
+                    <span> <%= data.user.name %> </span>
                   </li>
                   <li>
                     <strong>Email:</strong>
@@ -71,14 +70,14 @@
 
             <tr>
               <td style="width: 100%; text-align: center">
-                <% data.products.forEach((product)=>{ %> 
-                  <%- include('./components/product-card.ejs', { product: product}) %> 
+                <% data.products.forEach((product)=>{ %> <%-
+                include('./components/product-card.ejs', { product: product}) %>
                 <% }) %>
               </td>
             </tr>
 
-          <%- include('./sections/explore-section.ejs') %>
-          <%- include('./sections/footer-section.ejs') %>
+            <%- include('./sections/explore-section.ejs') %> <%-
+            include('./sections/footer-section.ejs') %>
           </table>
         </td>
       </tr>
