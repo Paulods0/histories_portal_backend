@@ -10,22 +10,22 @@ export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body
   try {
     if (!email) {
-      return res.status(400).json({ message: "Email is required" })
+      return res.status(400).json({ message: "Email é obrigatório" })
     }
     if (!password) {
-      return res.status(400).json({ message: "Password is required" })
+      return res.status(400).json({ message: "Password é obrigatória" })
     }
 
     const user = await UserModel.findOne({ email }).populate("posts")
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" })
+      return res.status(404).json({ message: "Usuário não encontrado" })
     }
     //@ts-ignore
     const isPasswordCorrect = bcrypt.compareSync(password, user.password)
 
     if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Password incorrect" })
+      return res.status(400).json({ message: "Password incorreta" })
     }
 
     const secret = process.env.SECRET as string

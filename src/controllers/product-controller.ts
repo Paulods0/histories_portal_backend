@@ -43,7 +43,7 @@ const createProduct = async (
 const getAllProducts = async (req: Request, res: Response) => {
   const category = req.query.category
   const page = parseInt(req.query.page as string) || 1
-  const limit = 40
+  const limit = 2
 
   const skip = limit * (page - 1)
 
