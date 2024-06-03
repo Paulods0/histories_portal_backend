@@ -67,7 +67,7 @@ export const getSinlgeClassifiedPost = async (
 }
 export const getAllClassifiedPost = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string, 10) || 1
-  const limit = 16
+  const limit = 20
 
   const skip = limit * (page - 1)
   const totalDocuments = await ClassifiedPostModel.countDocuments()
