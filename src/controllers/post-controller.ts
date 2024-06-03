@@ -130,7 +130,6 @@ const getAllPosts = async (req: Request, res: Response) => {
     })
   }
 }
-
 const getSinglePost = async (req: Request<{ id: string }>, res: Response) => {
   try {
     const { id } = req.params

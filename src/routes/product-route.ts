@@ -8,7 +8,6 @@ import {
   getProductsByCategory,
   updateProduct,
 } from "../controllers/product-controller"
-import { EmailProps, mailSend } from "../helpers"
 
 const route = Router()
 
@@ -19,6 +18,5 @@ route.get("/:id", getProductById)
 route.delete("/:id", deleteProduct)
 route.get("/product-cat", getProductsByCategory)
 route.post("/buy-product", buyProduct)
-
 
 export = route
