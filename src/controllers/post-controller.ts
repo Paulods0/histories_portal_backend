@@ -102,7 +102,7 @@ const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
 const getAllPosts = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string, 10) || 1
   const category = req.query.category
-  const limit = 16
+  const limit = 25
 
   const skip = limit * (page - 1)
 
