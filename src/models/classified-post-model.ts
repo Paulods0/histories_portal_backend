@@ -17,14 +17,15 @@ const ClassifiedSchema = new mongoose.Schema(
       phone: { type: String, required: true },
     },
     mainImage: { type: String },
-    content: { type: String, required: true },
+    images: [{ type: String }],
     category: {
       type: String,
       required: true,
     },
-    price: { type: String, required: true },
     category_slug: { type: String },
     type: { type: String, required: true },
+    price: { type: String, required: true },
+    content: { type: String, required: true },
     status: { type: String, required: true, default: "inactive" },
   },
   { timestamps: true }

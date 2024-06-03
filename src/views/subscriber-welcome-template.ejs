@@ -21,7 +21,7 @@
 
             <tr>
               <td style="padding: 50px 20px">
-                <p style="text-align: justify; color: black;">
+                <p style="text-align: justify; color: black">
                   Olá, <%= data.name %>, bem-vindo à Overland Angola!
                   <br />
                   <br />
@@ -41,6 +41,14 @@
 
             <%- include('./sections/explore-section.ejs') %> <%-
             include('./sections/footer-section.ejs') %>
+            <tr>
+              <td style="width: 100%; text-align: center">
+                <a
+                  style="text-transform: capitalize"
+                  href="http://localhost:5173/unsubscribe/"
+                  >cancelar subscrição</a>
+              </td>
+            </tr>
           </table>
         </td>
       </tr>

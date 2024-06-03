@@ -146,6 +146,7 @@ type BodyProps = {
   }
   products: {
     name: string
+    imaage: string
     totalPrice: string
     storeQuantity: number
   }[]

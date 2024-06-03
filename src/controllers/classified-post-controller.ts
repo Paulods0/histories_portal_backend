@@ -8,7 +8,7 @@ export const createClassifiedsPost = async (
   res: Response
 ) => {
   try {
-    const { author, content, mainImage, price, title, type } = req.body
+    const { author, content, mainImage, price, title, type, images } = req.body
     if (!author || !content || !mainImage || !price || !title || !type) {
       return res.status(400).json({
         success: false,
@@ -24,10 +24,11 @@ export const createClassifiedsPost = async (
       title,
       price,
       author,
+      images,
       content,
       mainImage,
-      category_slug: slug,
       category: CATEGORY,
+      category_slug: slug,
     })
 
     await newClassifiedPost.save()
@@ -65,14 +66,28 @@ export const getSinlgeClassifiedPost = async (
   }
 }
 export const getAllClassifiedPost = async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string, 10) || 1
+  const limit = 16
+
+  const skip = limit * (page - 1)
+  const totalDocuments = await ClassifiedPostModel.countDocuments()
+  const totalPages = Math.ceil(totalDocuments / limit)
+
   try {
-    const posts = await ClassifiedPostModel.find().sort({ createdAt: -1 })
+    const posts = await ClassifiedPostModel.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
     if (!posts || posts.length === 0) {
       return res
         .status(404)
         .json({ success: false, message: "Não há nenhum post ainda." })
     }
-    return res.status(200).json({ sucess: true, data: posts })
+
+    return res
+      .status(200)
+      .json({ total: totalDocuments, pages: totalPages, posts })
   } catch (error) {
     console.error("Error: " + error)
     return res.status(400).send({ message: "Erro no servidor: " + error })
@@ -109,7 +124,7 @@ export const deleteClassifiedPost = async (
 export const updateClassifiedPost = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const { newStatus } = req.body
+    const { newStatus, images } = req.body
 
     if (!Types.ObjectId.isValid(id)) {
       return res.status(400).json({ success: false, message: "Id inválido." })
@@ -122,7 +137,10 @@ export const updateClassifiedPost = async (req: Request, res: Response) => {
         .json({ success: false, message: "Post não encontrado" })
     }
 
-    await existingPost.updateOne({ status: newStatus }, { new: true })
+    await existingPost.updateOne(
+      { status: newStatus, images: images },
+      { new: true }
+    )
 
     return res
       .status(200)

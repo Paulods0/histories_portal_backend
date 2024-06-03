@@ -11,8 +11,7 @@ const router = Router()
 
 router.get("/", getAllSubscribers)
 router.post("/register", registerSubscriber)
-router.delete("/unregister/:id", unregisterSubscriber)
-
+router.put("/unregister", unregisterSubscriber)
 
 router.post("/want-to-be-yours", async (req: Request, res: Response) => {
   try {

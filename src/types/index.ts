@@ -8,14 +8,15 @@ export type ClassifiedPostAuthor = {
 }
 
 export type ClassifiedPost = {
-  title: string
-  mainImage: string
-  content: string
-  author: ClassifiedPostAuthor
-  category: string
   price: string
-  category_slug: string
+  title: string
+  content: string
+  images?: string
+  category: string
+  mainImage: string
   type: "sell" | "buy"
+  category_slug: string
+  author: ClassifiedPostAuthor
   status: "active" | "suspended" | "inactive"
 }
 

@@ -31,6 +31,7 @@ const registerSubscriber = async (req: Request, res: Response) => {
       data: {
         email: subscriber.email,
         name: subscriber.name,
+        id: subscriber._id,
       },
       from: "overlandteste0@gmail.com",
       subject: "Bem-vindo ao Overland Angola",
@@ -46,12 +47,17 @@ const registerSubscriber = async (req: Request, res: Response) => {
 }
 
 const unregisterSubscriber = async (req: Request, res: Response) => {
-  const { id } = req.params
-
-  await SubscriberModel.findByIdAndDelete(id)
-
-  console.log("success")
-  return res.status(200).json({ message: "Unregister" })
+  try {
+    const { email } = req.body
+    const user = await SubscriberModel.findOne({ email: email })
+    if (!user) {
+      return res.status(404).json({ message: "Usuário não existe" })
+    }
+    await user.deleteOne()
+    return res.status(200).json({ messsage: "Deletado" })
+  } catch (error) {
+    return res.status(400).json({ message: error })
+  }
 }
 
 const getAllSubscribers = async (req: Request, res: Response) => {
