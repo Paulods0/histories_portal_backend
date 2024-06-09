@@ -4,6 +4,7 @@ import cors from "cors"
 import postRoute from "./routes/post-route"
 import tipsRoute from "./routes/tip-route"
 import authRoute from "./routes/auth-route"
+import partnerRoute from "./routes/partner-route"
 import productRoute from "./routes/product-route"
 import scheduleRoute from "./routes/schedule-route"
 import subscriberRoute from "./routes/subscriber-route"
@@ -20,10 +21,11 @@ dotenv.config({ path: __dirname + "./env" })
 app.use(express.json())
 app.use(cors())
 
+app.use("/api/v1/tip", tipsRoute)
 app.use("/api/v1/auth", authRoute)
 app.use("/api/v1/post", postRoute)
-app.use("/api/v1/tip", tipsRoute)
 app.use("/api/v1/product", productRoute)
+app.use("/api/v1/partner", partnerRoute)
 app.use("/api/v1/newsletter", subscriberRoute)
 app.use("/api/v1/schedule-post", scheduleRoute)
 app.use("/api/v1/classified-post", classifiedPostRoute)

@@ -17,7 +17,7 @@
           >
            <%- include('./components/logotipo.ejs') %>
 
-            <% posts.forEach((post)=>{ %> 
+            <% data.posts.forEach((post)=>{ %> 
               <%- include('./components/post-card.ejs',{post:post}) %> 
             <% }) %>
 

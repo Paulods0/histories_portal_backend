@@ -99,6 +99,7 @@ const createPost = async (req: Request<{}, {}, Post>, res: Response) => {
       .json({ success: false, erro: error, message: "Erro ao criar o post." })
   }
 }
+
 const getAllPosts = async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string, 10) || 1
   const category = req.query.category
@@ -130,6 +131,7 @@ const getAllPosts = async (req: Request, res: Response) => {
     })
   }
 }
+
 const getSinglePost = async (req: Request<{ id: string }>, res: Response) => {
   try {
     const { id } = req.params

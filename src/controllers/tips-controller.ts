@@ -105,7 +105,7 @@ export const updateTip = async (
       { author, title, content, image },
       { new: true }
     )
-    return res.status(200).json({ message: "Atualizado", updatedTip })
+    return res.status(200).json({ message: "Dica atualizada com sucesso", updatedTip })
   } catch (error) {
     console.log(error)
     return res.status(400).json({ error })
@@ -116,10 +116,10 @@ export const deleteTip = async (req: Request, res: Response) => {
     const { id } = req.params
 
     if (!Types.ObjectId.isValid(id)) {
-      return res.status(500).json({ message: "Id inválido" })
+      return res.status(500).json({ message: "Erro ao eliminar. Id inválido" })
     }
     await TipsModel.findByIdAndDelete({ _id: id })
-    return res.status(200).json({ message: "Tip deletado" })
+    return res.status(200).json({ message: "Dica deletada com sucesso" })
   } catch (error) {
     console.log(error)
     return res.status(400).json({ error })
