@@ -15,15 +15,12 @@
             border="0"
             style="width: 600px; margin: 0 auto; background-color: #fff"
           >
-           <%- include('./components/logotipo.ejs') %>
-
-            <% data.posts.forEach((post)=>{ %> 
-              <%- include('./components/post-card.ejs',{post:post}) %> 
-            <% }) %>
-
-           <%- include('./sections/explore-section.ejs') %>
-           <%- include('./sections/footer-section.ejs') %>
-          
+            <%- include('./components/logotipo.ejs') %> 
+            <% data.forEach((post)=>{ %> 
+              <%- include('./components/post-card.ejs',{post:post}) %>
+            <% }) %> 
+              <%-include('./sections/explore-section.ejs') %> 
+              <%- include('./sections/footer-section.ejs') %>
             <tr>
               <td>
                 <a href="#" style="font-size: 14px; padding-bottom: 6px">
