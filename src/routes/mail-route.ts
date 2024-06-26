@@ -5,7 +5,7 @@ import { EmailProps, mailSend } from "../helpers"
 const router = Router()
 
 router.post("/write-for-us", async (req: Request, res: Response) => {
-  const { name, country, images, phone, email, context, history } = req.body
+  const { name, country, images, phone, email, contextualize, write } = req.body
   const data: EmailProps = {
     data: {
       name,
@@ -13,8 +13,8 @@ router.post("/write-for-us", async (req: Request, res: Response) => {
       images,
       phone,
       email,
-      context,
-      history,
+      contextualize,
+      write,
     },
     from: email,
     subject: "Escreve para nós",

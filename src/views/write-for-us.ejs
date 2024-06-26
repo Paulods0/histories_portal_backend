@@ -20,14 +20,14 @@
                 <span>Nº de telefone: </span> <span> <%= data.phone %> </span>
               </li>
             </ul>
-            <p style="width: 100%; padding: 0 50px; color: black">
-              <%= data.context %>
-            </p>
-            <p style="width: 100%; padding: 0 50px; color: black">
-              <%= data.history %>
-            </p>
+
+            <p style="width: 80%; margin:0 auto; color: black"><%= data.contextualize %></p>
+            <p style="width: 80%; margin:0 auto; color: black"><%= data.write %></p>
             <% data.images.forEach((image)=> { %>
-            <p><%= image %></p>
+            <img
+              src="<%= image %>"
+              style="height: 400px; width: 100%; object-fit: contain"
+            />
             <% }) %>
           </table>
         </td>
