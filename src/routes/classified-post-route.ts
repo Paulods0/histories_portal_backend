@@ -1,18 +1,12 @@
 import { Router } from "express"
-import {
-  createClassifiedsPost,
-  deleteClassifiedPost,
-  getAllClassifiedPost,
-  getSinlgeClassifiedPost,
-  updateClassifiedPost,
-} from "../controllers/classified-post-controller"
+import { ClassifiedPost } from "../controllers/classified-post-controller"
 
 const route = Router()
 
-route.post("/", createClassifiedsPost)
-route.get("/", getAllClassifiedPost)
-route.get("/:id", getSinlgeClassifiedPost)
-route.put("/:id", updateClassifiedPost)
-route.delete("/:id", deleteClassifiedPost)
+route.post("/", ClassifiedPost.createClassifiedsPost)
+route.get("/", ClassifiedPost.getAllClassifiedPost)
+route.get("/:id", ClassifiedPost.getSinlgeClassifiedPost)
+route.put("/:id", ClassifiedPost.updateClassifiedPost)
+route.delete("/:id", ClassifiedPost.deleteClassifiedPost)
 
 export = route

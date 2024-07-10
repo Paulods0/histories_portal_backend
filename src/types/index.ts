@@ -26,6 +26,7 @@ export type Post = {
   content: string
   author_id: string
   highlighted: boolean
+  date: string
   category?: string
   author_notes?: string
   tag?: string[]

@@ -1,17 +1,13 @@
 import { Request, Response, Router } from "express"
-import {
-  getAllSubscribers,
-  registerSubscriber,
-  unregisterSubscriber,
-} from "../controllers/subscriber-controller"
+import { Subscriber } from "../controllers/subscriber-controller"
 
 import { EmailProps, mailSend } from "../helpers"
 
 const router = Router()
 
-router.get("/", getAllSubscribers)
-router.post("/register", registerSubscriber)
-router.put("/unregister", unregisterSubscriber)
+router.get("/", Subscriber.getAllSubscribers)
+router.post("/register", Subscriber.registerSubscriber)
+router.put("/unregister", Subscriber.unregisterSubscriber)
 
 router.post("/want-to-be-yours", async (req: Request, res: Response) => {
   try {

@@ -1,18 +1,12 @@
 import { Router } from "express"
-import {
-  createPartner,
-  deletePartner,
-  getAllPartners,
-  getSinglePartner,
-  updatePartner,
-} from "../controllers/partner-controller"
+import { Partner } from "../controllers/partner-controller"
 
 const route = Router()
 
-route.post("/", createPartner)
-route.get("/", getAllPartners)
-route.get("/:id", getSinglePartner)
-route.put("/:id", updatePartner)
-route.delete("/:id", deletePartner)
+route.post("/", Partner.createPartner)
+route.get("/", Partner.getAllPartners)
+route.get("/:id", Partner.getSinglePartner)
+route.put("/:id", Partner.updatePartner)
+route.delete("/:id", Partner.deletePartner)
 
 export = route

@@ -1,22 +1,14 @@
-import { Request, Response, Router } from "express"
-import {
-  buyProduct,
-  createProduct,
-  deleteProduct,
-  getAllProducts,
-  getProductById,
-  getProductsByCategory,
-  updateProduct,
-} from "../controllers/product-controller"
+import { Router } from "express"
+import { Product } from "../controllers/product-controller"
 
 const route = Router()
 
-route.post("/", createProduct)
-route.get("/", getAllProducts)
-route.put("/:id", updateProduct)
-route.get("/:id", getProductById)
-route.delete("/:id", deleteProduct)
-route.get("/product-cat", getProductsByCategory)
-route.post("/buy-product", buyProduct)
+route.post("/", Product.createProduct)
+route.get("/", Product.getAllProducts)
+route.put("/:id", Product.updateProduct)
+route.get("/:id", Product.getProductById)
+route.delete("/:id", Product.deleteProduct)
+route.get("/product-cat", Product.getProductsByCategory)
+route.post("/buy-product", Product.buyProduct)
 
 export = route
