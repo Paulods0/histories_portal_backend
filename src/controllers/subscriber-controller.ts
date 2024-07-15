@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { EmailProps, mailSend } from "../helpers"
 import { SubscriberModel } from "../models/subscriber-model"
 
-export class Subscriber {
+export class SubscriberController {
   public static async registerSubscriber(req: Request, res: Response) {
     try {
       const { email, name, phone, country, countryCode } = req.body
@@ -35,10 +35,11 @@ export class Subscriber {
           id: subscriber._id,
         },
         from: "overlandteste0@gmail.com",
-        subject: "Bem-vindo ao Overland Angola",
+        subject: "BEM-VINDO AO OVERLAND ANGOLA",
         template: "subscriber-welcome-template.ejs",
         to: subscriber.email!!,
       }
+
       await mailSend(data)
 
       return res.status(200).json(subscriber)

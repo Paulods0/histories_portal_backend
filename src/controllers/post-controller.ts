@@ -122,7 +122,7 @@ export class PostController {
       const posts = await PostModel.find(filter)
         .limit(limit)
         .skip(skip)
-        .sort({ createdAt: -1 })
+        .sort({ date: -1 })
         .populate({
           path: "author",
           select: "_id firstname lastname image",

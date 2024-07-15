@@ -3,7 +3,7 @@ import { ClassifiedPost as ClassifiedPostType } from "../types"
 import { ClassifiedPostModel } from "../models/classified-post-model"
 import { Types } from "mongoose"
 
-export class ClassifiedPost {
+export class ClassifiedPostController {
   public static async createClassifiedsPost(
     req: Request<{}, {}, ClassifiedPostType>,
     res: Response

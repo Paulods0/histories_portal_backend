@@ -1,14 +1,14 @@
 import { Router } from "express"
-import { User } from "../controllers/user-controller"
+import { UserController } from "../controllers/user-controller"
 
 const route = Router()
 
-route.get("/", User.getUsers)
-route.post("/", User.createUser)
-route.put("/:id", User.updateUser)
-route.post("/login", User.loginUser)
-route.delete("/:id", User.deleteUser)
-route.get("/:id", User.getSingleUser)
-route.put("/forgetpassword", User.forgetPassword)
+route.get("/", UserController.getUsers)
+route.post("/", UserController.createUser)
+route.put("/:id", UserController.updateUser)
+route.post("/login", UserController.loginUser)
+route.delete("/:id", UserController.deleteUser)
+route.get("/:id", UserController.getSingleUser)
+route.put("/forgetpassword", UserController.forgetPassword)
 
 export = route

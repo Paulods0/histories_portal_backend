@@ -16,7 +16,7 @@ type UpdatePartnerReq = {
   content?: string
 }
 
-export class Partner {
+export class PartnerController {
   public static async createPartner(
     req: Request<{}, {}, CreatePartnerReq>,
     res: Response

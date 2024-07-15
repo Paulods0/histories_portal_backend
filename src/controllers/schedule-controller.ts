@@ -3,7 +3,7 @@ import { SchedulePost } from "../types"
 import { ScheduleModel } from "../models/schedule-model"
 import { Types } from "mongoose"
 
-export class Schedule {
+export class ScheduleController {
   public static async createSchedulePost  (
     req: Request<{}, {}, SchedulePost>,
     res: Response

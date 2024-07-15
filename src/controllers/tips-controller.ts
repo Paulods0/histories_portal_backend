@@ -17,7 +17,7 @@ type UpdateTipRequest = {
   content?: string
   category?: string
 }
-export class Tip {
+export class TipController {
   
   public static async createTip  (req: Request<{}, {}, CreateTipRequest>, res: Response)  {
     try {

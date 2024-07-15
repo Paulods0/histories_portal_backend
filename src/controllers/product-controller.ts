@@ -12,20 +12,8 @@ type CreateProduct = {
   quantity: number
   description?: string
 }
-type BodyProps = {
-  user: {
-    name: string
-    email: string
-    phone: string | number
-  }
-  products: {
-    name: string
-    imaage: string
-    totalPrice: string
-    storeQuantity: number
-  }[]
-}
-export class Product {
+
+export class ProductController {
   public static async createProduct(
     req: Request<{}, {}, CreateProduct>,
     res: Response
@@ -162,39 +150,5 @@ export class Product {
     }
   }
 
-  public static async buyProduct(
-    req: Request<{}, {}, BodyProps>,
-    res: Response
-  ) {
-    try {
-      const { user, products } = req.body
-
-      const formatedProducts = products.map((product) => {
-        return {
-          ...product,
-          totalPrice: new Intl.NumberFormat("pt-PT", {
-            style: "currency",
-            currency: "AKZ",
-          }).format(Number(product.totalPrice)),
-        }
-      })
-
-      const data: EmailProps = {
-        data: {
-          user,
-          products: formatedProducts,
-        },
-        from: user.email,
-        to: "pauloluguenda0@gmail.com",
-        subject: "COMPRA DE ARTIGO(S)",
-        template: "buy-product-email-template.ejs",
-      }
-
-      await mailSend(data)
-
-      return res.status(200).end()
-    } catch (error) {
-      return res.status(400).json({ error })
-    }
-  }
+ 
 }

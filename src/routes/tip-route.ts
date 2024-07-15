@@ -1,12 +1,12 @@
 import { Router } from "express"
-import { Tip } from "../controllers/tips-controller"
+import { TipController } from "../controllers/tips-controller"
 
 const route = Router()
 
-route.post("/", Tip.createTip)
-route.get("/", Tip.getTips)
-route.get("/:id", Tip.getSingleTip)
-route.put("/:id", Tip.updateTip)
-route.delete("/:id", Tip.deleteTip)
+route.post("/", TipController.createTip)
+route.get("/", TipController.getTips)
+route.get("/:id", TipController.getSingleTip)
+route.put("/:id", TipController.updateTip)
+route.delete("/:id", TipController.deleteTip)
 
 export = route

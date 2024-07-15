@@ -16,6 +16,7 @@ export type EmailProps = {
   from: string
   subject: string
 }
+
 export async function mailSend(emailProps: EmailProps) {
   try {
     ejs.renderFile(

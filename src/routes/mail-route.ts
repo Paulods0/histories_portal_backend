@@ -1,28 +1,10 @@
-import { Request, Response, Router } from "express"
-
-import { EmailProps, mailSend } from "../helpers"
+import { Router } from "express"
+import { MailController } from "../controllers/mail-controller"
 
 const router = Router()
 
-router.post("/write-for-us", async (req: Request, res: Response) => {
-  const { name, country, images, phone, email, contextualize, write } = req.body
-  const data: EmailProps = {
-    data: {
-      name,
-      country,
-      images,
-      phone,
-      email,
-      contextualize,
-      write,
-    },
-    from: email,
-    subject: "Escreve para nós",
-    template: "write-for-us.ejs",
-    to: "pauloluguenda0@gmail.com",
-  }
-  mailSend(data)
-  return res.status(200).send()
-})
+router.post("/buy-product", MailController.buyProduct)
+router.post("/write-for-us", MailController.sendWriteForUsMail)
+router.post("/want-to-be-yours", MailController.sendWantToBeYoursMail)
 
 export = router

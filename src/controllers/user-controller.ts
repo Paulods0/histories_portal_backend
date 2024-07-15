@@ -5,7 +5,7 @@ import * as jwt from "jsonwebtoken"
 import { User as UserType } from "../types"
 import { UpdateUser } from "../types/update"
 
-export class User {
+export class UserController {
   public static async loginUser(req: Request, res: Response) {
     const { email, password } = req.body
     try {

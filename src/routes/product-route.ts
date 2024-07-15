@@ -1,14 +1,14 @@
 import { Router } from "express"
-import { Product } from "../controllers/product-controller"
+import { ProductController } from "../controllers/product-controller"
 
 const route = Router()
 
-route.post("/", Product.createProduct)
-route.get("/", Product.getAllProducts)
-route.put("/:id", Product.updateProduct)
-route.get("/:id", Product.getProductById)
-route.delete("/:id", Product.deleteProduct)
-route.get("/product-cat", Product.getProductsByCategory)
-route.post("/buy-product", Product.buyProduct)
+route.post("/", ProductController.createProduct)
+route.get("/", ProductController.getAllProducts)
+route.put("/:id", ProductController.updateProduct)
+route.get("/:id", ProductController.getProductById)
+route.delete("/:id", ProductController.deleteProduct)
+// route.get("/product-cat", ProductController.getProductsByCategory)
+// route.post("/buy-product", ProductController.buyProduct)
 
 export = route
