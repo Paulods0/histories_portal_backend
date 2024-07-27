@@ -6,6 +6,7 @@ type BodyProps = {
     name: string
     email: string
     phone: string | number
+    
   }
   products: {
     name: string
@@ -32,7 +33,7 @@ export class MailController {
       from: email,
       subject: "ESCREVE PARA NÓS",
       template: "write-for-us.ejs",
-      to: "pauloluguenda0@gmail.com",
+      to: "webmaster.overlandangola@aol.com",
     }
     mailSend(data)
     return res.status(200).send()
@@ -50,7 +51,7 @@ export class MailController {
           description: description,
         },
         from: email,
-        to: "pauloluguenda0@gmail.com",
+        to: "webmaster.overlandangola@aol.com",
         subject: "QUERO SER VOSSO",
         template: "want-to-be-yours-template.ejs",
       }
@@ -84,7 +85,7 @@ export class MailController {
           products: formatedProducts,
         },
         from: user.email,
-        to: "pauloluguenda0@gmail.com",
+        to: "webmaster.overlandangola@aol.com",
         subject: "COMPRA DE ARTIGO(S)",
         template: "buy-product-email-template.ejs",
       }

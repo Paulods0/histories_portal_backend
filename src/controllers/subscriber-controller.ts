@@ -34,7 +34,7 @@ export class SubscriberController {
           name: subscriber.name,
           id: subscriber._id,
         },
-        from: "overlandteste0@gmail.com",
+        from: "webmaster.overlandangola@aol.com",
         subject: "BEM-VINDO AO OVERLAND ANGOLA",
         template: "subscriber-welcome-template.ejs",
         to: subscriber.email!!,

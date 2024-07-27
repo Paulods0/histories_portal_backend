@@ -90,7 +90,7 @@ export class PostController {
         to: subsEmail,
         data: lastPosts,
         subject: "Newsletter",
-        from: "overlandangolateste@gmail.com",
+        from: "webmaster.overlandangola@aol.com",
         template: "newsletter-posts-template.ejs",
       }
 
@@ -110,14 +110,10 @@ export class PostController {
     const page = parseInt(req.query.page as string, 10) || 1
     const category = req.query.category
     const limit = 20
-
     const skip = limit * (page - 1)
-
     const filter = category ? { category_slug: category } : {}
-
     const totalDocuments = await PostModel.countDocuments(filter)
     const totalPages = Math.ceil(totalDocuments / limit)
-
     try {
       const posts = await PostModel.find(filter)
         .limit(limit)
@@ -127,7 +123,6 @@ export class PostController {
           path: "author",
           select: "_id firstname lastname image",
         })
-
       res.status(200).json({ total: totalDocuments, pages: totalPages, posts })
     } catch (error) {
       console.error(error)
