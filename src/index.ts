@@ -19,7 +19,12 @@ connectDB()
 
 dotenv.config({ path: __dirname + "./env" })
 app.use(express.json())
-app.use(cors())
+app.use(
+  cors({
+    origin: "https://overlandangola.com",
+    optionsSuccessStatus: 200,
+  })
+)
 
 app.use("/api/v1/tip", tipsRoute)
 app.use("/api/v1/auth", userRoute)
