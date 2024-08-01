@@ -15,16 +15,16 @@ import { connectDB } from "./config/db"
 
 const PORT = process.env.PORT || 8181
 const app = express()
-connectDB()
-
 dotenv.config({ path: __dirname + "./env" })
+
+const corsOptions = {
+  origin: "https://overlandangola.com",
+  optionsSuccessStatus: 200,
+}
+
+connectDB()
 app.use(express.json())
-app.use(
-  cors({
-    origin: "https://overlandangola.com",
-    optionsSuccessStatus: 200,
-  })
-)
+app.use(cors())
 
 app.use("/api/v1/tip", tipsRoute)
 app.use("/api/v1/auth", userRoute)

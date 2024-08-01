@@ -9,6 +9,5 @@ export const connectDB = async () => {
     console.log(`DB connected ${connection.connection.host}`)
   } catch (error) {
     console.log("connection failed")
-    // console.log(typeof connection)
   }
 }
