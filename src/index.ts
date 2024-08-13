@@ -15,7 +15,12 @@ import { connectDB } from "./config/db"
 
 const PORT = process.env.PORT || 8181
 const app = express()
-dotenv.config({ path: __dirname + "./env" })
+dotenv.config({
+  path:
+    process.env.NODE_ENV === "production"
+      ? ".env.production"
+      : ".env.development",
+})
 
 const corsOptions = {
   origin: "https://overlandangola.com",

@@ -35,7 +35,7 @@ export class ScheduleController {
 
   public static async getAllSchedulePosts  (req: Request, res: Response)  {
     const page = parseInt(req.query.page as string) || 1
-    const postPerPage = 12
+    const postPerPage = 2
     const skip = postPerPage * (page - 1)
 
     const totalPosts = await ScheduleModel.countDocuments()

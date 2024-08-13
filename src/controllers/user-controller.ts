@@ -96,14 +96,24 @@ export class UserController {
   }
 
   public static async getUsers(req: Request, res: Response) {
+    const page = parseInt(req.query.page as string) || 1
+    const limit = 2
+    const skip = limit * (page - 1)
+    const totalDocuments = await UserModel.countDocuments()
+    const totalPages = Math.ceil(totalDocuments / limit)
+
     try {
       const users = await UserModel.find()
+        .limit(limit)
+        .skip(skip)
         .sort({ createdAt: -1 })
         .select("-password")
+
       if (!users) {
-        return res.status(404).json({ message: "There is no users" })
+        return res.status(404).json({ message: "Não há nenhum usuário" })
       }
-      res.status(200).json(users)
+
+      res.status(200).json({ pages: totalPages, users: users })
     } catch (error) {
       res.status(500).json({ error: error, message: "Internal Server Error" })
     }
@@ -128,10 +138,10 @@ export class UserController {
   ) {
     try {
       const { id } = req.params
-      const { firstname, lastname, image, role } = req.body
+      const { firstname, lastname, image, role, email } = req.body
       const newUser = await UserModel.findOneAndUpdate(
         { _id: id },
-        { firstname, lastname, image, role },
+        { firstname, lastname, image, role, email },
         { new: true }
       )
       res.status(200).json(newUser)
@@ -150,7 +160,7 @@ export class UserController {
       if (!user) {
         return res.status(404).json({ message: "usuário não encontrado" })
       }
-
+      //@ts-ignore
       await user.deleteOne()
       res.status(200).json({ message: "Usuário removido com sucesso" })
     } catch (error) {

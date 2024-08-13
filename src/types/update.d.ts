@@ -1,6 +1,7 @@
 export type UpdateUser = {
-  firstname?: string
-  lastname?: string
-  image?: string
   role?: string
+  image?: string
+  email?: string
+  lastname?: string
+  firstname?: string
 }

@@ -109,11 +109,12 @@ export class PostController {
   public static async getAllPosts(req: Request, res: Response) {
     const page = parseInt(req.query.page as string, 10) || 1
     const category = req.query.category
-    const limit = 20
+    const limit = parseInt(req.query.limit as string) || 20
     const skip = limit * (page - 1)
     const filter = category ? { category_slug: category } : {}
     const totalDocuments = await PostModel.countDocuments(filter)
     const totalPages = Math.ceil(totalDocuments / limit)
+
     try {
       const posts = await PostModel.find(filter)
         .limit(limit)
