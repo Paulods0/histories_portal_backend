@@ -42,11 +42,11 @@ export class ProductController {
       res.status(500).send({ erro: "Erro no servidor: " + error })
     }
   }
-  
+
   public static async getAllProducts(req: Request, res: Response) {
     const category = req.query.category
     const page = parseInt(req.query.page as string) || 1
-    const limit = 40
+    const limit = 2
 
     const skip = limit * (page - 1)
 
@@ -149,6 +149,4 @@ export class ProductController {
       res.status(500).json({ err: "Erro no servidor: " + error })
     }
   }
-
- 
 }

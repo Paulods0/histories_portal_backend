@@ -12,17 +12,17 @@ export class PostController {
     res: Response
   ) {
     const {
+      tag,
+      date,
       title,
-      category,
       content,
-      highlighted,
+      category,
+      latitude,
+      longitude,
       mainImage,
       author_id,
       author_notes,
-      tag,
-      date,
-      longitude,
-      latitude,
+      highlighted,
     } = req.body
     if (!title || !mainImage || !content || !category || !date) {
       return res.status(400).json({

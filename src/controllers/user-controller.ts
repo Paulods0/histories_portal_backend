@@ -97,7 +97,7 @@ export class UserController {
 
   public static async getUsers(req: Request, res: Response) {
     const page = parseInt(req.query.page as string) || 1
-    const limit = 2
+    const limit = parseInt(req.query.limit as string)
     const skip = limit * (page - 1)
     const totalDocuments = await UserModel.countDocuments()
     const totalPages = Math.ceil(totalDocuments / limit)

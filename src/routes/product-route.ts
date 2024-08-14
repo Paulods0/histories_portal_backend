@@ -8,7 +8,5 @@ route.get("/", ProductController.getAllProducts)
 route.put("/:id", ProductController.updateProduct)
 route.get("/:id", ProductController.getProductById)
 route.delete("/:id", ProductController.deleteProduct)
-// route.get("/product-cat", ProductController.getProductsByCategory)
-// route.post("/buy-product", ProductController.buyProduct)
 
 export = route
