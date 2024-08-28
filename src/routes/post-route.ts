@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { PostController } from "../controllers/post-controller"
+import { PostController } from "../controllers/post-controller/post-controller"
 
 const route = Router()
 
@@ -13,7 +13,6 @@ route.get("/search", PostController.getSearchedPosts)
 route.put("/deslike/:id", PostController.deslikePost)
 route.get("/user-posts/:user_id", PostController.getUserPosts)
 route.get("/get/most-liked", PostController.getMostLikedPosts)
-route.get("/category/:category_slug", PostController.getByCategory)
 route.get("/get/most-views-post", PostController.getMostViewedPosts)
 route.get("/get/highlighted-post", PostController.getHighlightedPost)
 

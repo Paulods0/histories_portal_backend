@@ -1,5 +1,4 @@
-import mongoose, { Document, Schema, Types } from "mongoose"
-import { PostModel } from "./post-model"
+import mongoose, { Schema, Types } from "mongoose"
 
 export const userSchema = new Schema(
   {
@@ -13,15 +12,5 @@ export const userSchema = new Schema(
   },
   { timestamps: true }
 )
-//@ts-ignore
-userSchema.pre("remove", async function (next) {
-  try {
-    //@ts-ignore
-    await PostModel.deleteMany({ author: this._id })
-    next()
-  } catch (error) {
-    next(error)
-  }
-})
 
 export const UserModel = mongoose.model("User", userSchema)

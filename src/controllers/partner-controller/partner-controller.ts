@@ -1,45 +1,54 @@
-import { Request, Response } from "express"
-import { PartnerModel } from "../models/partner-model"
+import {
+  CreatePartnerRequestDTO,
+  PartnerQueryParams,
+  UpdatePartnerRequestDTO,
+} from "./partner-controller.types"
 import { Types } from "mongoose"
-
-type CreatePartnerReq = {
-  image: string
-  title: string
-  author: string
-  content: string
-}
-
-type UpdatePartnerReq = {
-  image?: string
-  title?: string
-  author?: string
-  content?: string
-}
+import { NextFunction, Request, Response } from "express"
+import { PartnerModel } from "../../models/partner-model"
+import { ValidationError } from "../../middlewares/error/validation"
+import { NotFoundError } from "../../middlewares/error/not-found-error"
 
 export class PartnerController {
   public static async createPartner(
-    req: Request<{}, {}, CreatePartnerReq>,
-    res: Response
+    req: Request<{}, {}, CreatePartnerRequestDTO>,
+    res: Response,
+    next: NextFunction
   ) {
     try {
       const { author, content, image, title } = req.body
-      if (!author || !content || !image || !title) {
-        return res
-          .status(400)
-          .json({ message: "Preencha todos os campos obrigatórios" })
+
+      if (!content) {
+        throw new ValidationError("O conteúdo é obrigatório.")
+      }
+      if (!image) {
+        throw new ValidationError("A imagem é obrigatório.")
+      }
+      if (!author) {
+        throw new ValidationError("O autor é obrigatório.")
+      }
+      if (!title) {
+        throw new ValidationError("O título é obrigatório.")
       }
       const partner = new PartnerModel({ title, content, image, author })
       await partner.save()
+
       return res.status(201).json({ message: "Criado com sucesso" })
     } catch (error) {
-      return res.status(500).json({ message: error })
+      next(error)
     }
   }
 
-  public static async getAllPartners(req: Request, res: Response) {
-    const page = Number(req.query.page) || 1
+  public static async getAllPartners(
+    req: Request<{}, {}, {}, PartnerQueryParams>,
+    res: Response
+  ) {
+    const { page: queryPage } = req.query
+
+    const page = Number(queryPage) || 1
     const limit = 20
     const skip = limit * (page - 1)
+
     try {
       const totalDocuments = await PartnerModel.countDocuments()
       const partners = await PartnerModel.find({})
@@ -73,18 +82,21 @@ export class PartnerController {
   }
 
   public static async updatePartner(
-    req: Request<{ id: string }, {}, UpdatePartnerReq>,
-    res: Response
+    req: Request<{ id: string }, {}, UpdatePartnerRequestDTO>,
+    res: Response,
+    next: NextFunction
   ) {
     try {
       const { id } = req.params
       const { author, content, image, title } = req.body
+
       if (!Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: "Id inválido" })
+        throw new ValidationError("Id inválido")
       }
+
       const existingPartner = await PartnerModel.findById({ _id: id })
       if (!existingPartner) {
-        return res.status(404).json({ message: "Não encontrado" })
+        throw new NotFoundError("Id inválido")
       }
 
       await existingPartner.updateOne(
@@ -98,23 +110,24 @@ export class PartnerController {
       )
       return res.status(200).json({ message: "Atualizado com sucesso" })
     } catch (error) {
-      return res.status(500).json({ message: error })
+      next(error)
     }
   }
 
   public static async deletePartner(
     req: Request<{ id: string }>,
-    res: Response
+    res: Response,
+    next: NextFunction
   ) {
     try {
       const { id } = req.params
       if (!Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: "Id inválido" })
+        throw new Error("Id inválido.")
       }
       await PartnerModel.findByIdAndDelete({ _id: id })
-      return res.status(200).json({ message: "Eliminado com sucesso" })
+      return res.status(200).json({ message: "Removido com sucesso" })
     } catch (error) {
-      return res.status(500).json({ message: error })
+      next(error)
     }
   }
 }

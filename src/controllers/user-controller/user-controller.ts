@@ -1,37 +1,52 @@
-import { Request, Response } from "express"
-import { UserModel } from "../models/user-model"
+import {
+  CreateUserRequestDTO,
+  GetUsersQueryParams,
+  LoginRequestDTO,
+  UpdateUserRequestDTO,
+} from "./user-controller.types"
 import * as bcrypt from "bcrypt"
 import * as jwt from "jsonwebtoken"
-import { User as UserType } from "../types"
-import { UpdateUser } from "../types/update"
+import { UserModel } from "../../models/user-model"
+import { NextFunction, Request, Response } from "express"
+import { CommonError } from "../../middlewares/error/common-error"
+import { ValidationError } from "../../middlewares/error/validation"
+import { NotFoundError } from "../../middlewares/error/not-found-error"
+import { AuthenticationError } from "../../middlewares/error/authentication-error"
 
 export class UserController {
-  public static async loginUser(req: Request, res: Response) {
+  public static async loginUser(
+    req: Request<{}, {}, LoginRequestDTO>,
+    res: Response,
+    next: NextFunction
+  ) {
     const { email, password } = req.body
     try {
-      if (!email) {
-        return res.status(400).json({ message: "Email é obrigatório" })
+      if (!email || typeof email !== "string" || !email.trim()) {
+        throw new ValidationError("Email é obrigatório")
       }
-      if (!password) {
-        return res.status(400).json({ message: "Password é obrigatória" })
+      if (!password || typeof password !== "string" || !password.trim()) {
+        throw new ValidationError("Password é obrigatória")
       }
 
       const user = await UserModel.findOne({ email }).populate("posts")
 
       if (!user) {
-        return res.status(404).json({ message: "Usuário não encontrado" })
+        throw new NotFoundError("Usuário não encontrado")
       }
-      //@ts-ignore
-      const isPasswordCorrect = bcrypt.compareSync(password, user.password)
+
+      const isPasswordCorrect = bcrypt.compareSync(
+        password,
+        user.password as string
+      )
 
       if (!isPasswordCorrect) {
-        return res.status(400).json({ message: "Password incorreta" })
+        throw new AuthenticationError("Password incorreta")
       }
 
       const secret = process.env.SECRET as string
       const token = jwt.sign({ id: user._id }, secret, { expiresIn: "7d" })
 
-      res.status(200).json({
+      return res.status(200).json({
         id: user._id,
         user: {
           email: user.email,
@@ -43,61 +58,70 @@ export class UserController {
         token,
       })
     } catch (error) {
-      res.status(400).json({ error })
+      next(error)
     }
   }
 
   public static async createUser(
-    req: Request<{}, {}, UserType>,
-    res: Response
+    req: Request<{}, {}, CreateUserRequestDTO>,
+    res: Response,
+    next: NextFunction
   ) {
     const saltRounds = 10
     const salt = bcrypt.genSaltSync(saltRounds)
+
     try {
       const { firstname, lastname, email, password, image, role } = req.body
+
       if (!firstname) {
-        return res.status(400).json({ message: "Firstname is required" })
+        throw new ValidationError("O nome é obrigatório")
       }
       if (!lastname) {
-        return res.status(400).json({ message: "Lastname is required" })
+        throw new ValidationError("O sobrenome é obrigatório")
       }
       if (!email) {
-        return res.status(400).json({ message: "Email is required" })
+        throw new ValidationError("O email é obrigatório")
       }
       if (!password || password.length < 6) {
-        return res.status(400).json({
-          message: "Password is required and should be greather or equal to 6",
-        })
+        throw new ValidationError(
+          "A password é obrigatória e deve ser maior ou igual a 6"
+        )
       }
       if (!role) {
-        return res.status(400).json({
-          message: "A role é obrigatória",
-        })
+        throw new ValidationError("A role é obrigatória")
       }
 
       const userExists = await UserModel.findOne({ email })
       if (userExists) {
-        return res.status(409).json({ message: "User already exists" })
+        throw new CommonError("Usuário já existe", 409)
       }
+
       const hashedPassword = bcrypt.hashSync(password, salt)
       const user = new UserModel({
         role,
         email,
-        firstname,
         lastname,
+        firstname,
         image: image,
         password: hashedPassword,
       })
-      const response = await user.save()
-      res.status(201).json({ message: "User saved successfully", response })
+
+      await user.save()
+
+      return res.status(201).json({ message: "Usuário criado com sucesso." })
     } catch (error) {
-      res.status(500).json({ error: error, message: "Could not create user" })
+      next(error)
     }
   }
 
-  public static async getUsers(req: Request, res: Response) {
-    const page = parseInt(req.query.page as string) || 1
-    const limit = parseInt(req.query.limit as string)
+  public static async getUsers(
+    req: Request<{}, {}, {}, GetUsersQueryParams>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { limit: queryLimit, page: queryPage } = req.query
+    const page = parseInt(queryPage) || 1
+    const limit = parseInt(queryLimit)
     const skip = limit * (page - 1)
     const totalDocuments = await UserModel.countDocuments()
     const totalPages = Math.ceil(totalDocuments / limit)
@@ -110,66 +134,79 @@ export class UserController {
         .select("-password")
 
       if (!users) {
-        return res.status(404).json({ message: "Não há nenhum usuário" })
+        throw new NotFoundError("Não há nenhum usuário ainda.")
       }
 
-      res.status(200).json({ pages: totalPages, users: users })
+      res
+        .status(200)
+        .json({ total: totalDocuments, pages: totalPages, users: users })
     } catch (error) {
-      res.status(500).json({ error: error, message: "Internal Server Error" })
+      next(error)
     }
   }
 
-  public static async getSingleUser(req: Request, res: Response) {
+  public static async getSingleUser(
+    req: Request<{ id: string }>,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const { id } = req.params
       const user = await UserModel.findById({ _id: id })
+
       if (!user) {
-        return res.status(404).json({ message: "User not found" })
+        throw new NotFoundError("User not found")
       }
-      res.status(200).json(user)
+
+      return res.status(200).json(user)
     } catch (error) {
-      res.status(404).json({ error: error, message: "User not found" })
+      next(error)
     }
   }
 
   public static async updateUser(
-    req: Request<{ id: string }, {}, UpdateUser>,
-    res: Response
+    req: Request<{ id: string }, {}, UpdateUserRequestDTO>,
+    res: Response,
+    next: NextFunction
   ) {
     try {
       const { id } = req.params
+
       const { firstname, lastname, image, role, email } = req.body
+
       const newUser = await UserModel.findOneAndUpdate(
         { _id: id },
         { firstname, lastname, image, role, email },
         { new: true }
       )
-      res.status(200).json(newUser)
+
+      return res.status(200).json(newUser)
     } catch (error) {
-      res
-        .status(404)
-        .json({ error: error, message: "Erro ao atualizar o usuário" })
+      next(error)
     }
   }
 
-  public static async deleteUser(req: Request, res: Response) {
+  public static async deleteUser(
+    req: Request<{ id: string }>,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const { id } = req.params
       const user = await UserModel.findById({ _id: id })
 
       if (!user) {
-        return res.status(404).json({ message: "usuário não encontrado" })
+        throw new NotFoundError("usuário não encontrado")
       }
-      //@ts-ignore
+
       await user.deleteOne()
-      res.status(200).json({ message: "Usuário removido com sucesso" })
+      return res.status(200).json({ message: "Usuário removido com sucesso" })
     } catch (error) {
-      res
-        .status(400)
-        .json({ error: error, message: "Erro ao remover o usuário" })
+      next(error)
     }
   }
 
+  //EM FASE DE TESTES, AINDA NÃO ESTÁ EM USO.
   public static async forgetPassword(req: Request, res: Response) {
     const { email, newPassword } = req.body
     try {

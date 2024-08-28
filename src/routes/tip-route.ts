@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { TipController } from "../controllers/tips-controller"
+import { TipController } from "../controllers/tip-controller/tips-controller"
 
 const route = Router()
 

@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { ClassifiedPostController } from "../controllers/classified-post-controller"
+import { ClassifiedPostController } from "../controllers/classified-post-controller/classified-post-controller"
 
 const route = Router()
 

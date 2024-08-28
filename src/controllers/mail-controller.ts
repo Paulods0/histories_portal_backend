@@ -6,7 +6,6 @@ type BodyProps = {
     name: string
     email: string
     phone: string | number
-    
   }
   products: {
     name: string
@@ -16,6 +15,7 @@ type BodyProps = {
   }[]
 }
 
+const USER_EMAIL = "webmaster.overlandangola@aol.com"
 export class MailController {
   public static async sendWriteForUsMail(req: Request, res: Response) {
     const { name, country, images, phone, email, contextualize, write } =
@@ -33,8 +33,9 @@ export class MailController {
       from: email,
       subject: "ESCREVE PARA NÓS",
       template: "write-for-us.ejs",
-      to: "webmaster.overlandangola@aol.com",
+      to: USER_EMAIL,
     }
+
     mailSend(data)
     return res.status(200).send()
   }
@@ -51,7 +52,7 @@ export class MailController {
           description: description,
         },
         from: email,
-        to: "webmaster.overlandangola@aol.com",
+        to: USER_EMAIL,
         subject: "QUERO SER VOSSO",
         template: "want-to-be-yours-template.ejs",
       }
@@ -85,7 +86,8 @@ export class MailController {
           products: formatedProducts,
         },
         from: user.email,
-        to: "webmaster.overlandangola@aol.com",
+        // to: USER_EMAIL,
+        to: "pauloluguenda0@gmail.com",
         subject: "COMPRA DE ARTIGO(S)",
         template: "buy-product-email-template.ejs",
       }

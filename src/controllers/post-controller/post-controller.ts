@@ -1,15 +1,24 @@
+import {
+  PostQueryParams,
+  CreatePostRequestDTO,
+  UpdatePostRequestDTO,
+} from "./post-controller.types"
 import { Types } from "mongoose"
-import { Request, Response } from "express"
-import { Post as PostType } from "../types"
-import { PostModel } from "../models/post-model"
-import { UserModel } from "../models/user-model"
-import { EmailProps, mailSend } from "../helpers"
-import { SubscriberModel } from "../models/subscriber-model"
+import { PostModel } from "../../models/post-model"
+import { UserModel } from "../../models/user-model"
+import { EmailProps, mailSend } from "../../helpers"
+import { NextFunction, Request, Response } from "express"
+import { SubscriberModel } from "../../models/subscriber-model"
+import { ValidationError } from "../../middlewares/error/validation"
+import { NotFoundError } from "../../middlewares/error/not-found-error"
+
+export const WEBMASTER_EMAIL = "webmaster.overlandangola@aol.com"
 
 export class PostController {
   public static async createPost(
-    req: Request<{}, {}, PostType>,
-    res: Response
+    req: Request<{}, {}, CreatePostRequestDTO>,
+    res: Response,
+    next: NextFunction
   ) {
     const {
       tag,
@@ -24,12 +33,13 @@ export class PostController {
       author_notes,
       highlighted,
     } = req.body
-    if (!title || !mainImage || !content || !category || !date) {
-      return res.status(400).json({
-        sucess: false,
-        message: "Por favor preencha todos os campos obrigatórios.",
-      })
-    }
+
+    if (!title) throw new ValidationError("O título é obrigatório.")
+    if (!date) throw new ValidationError("A categoria é obrigatória.")
+    if (!author_id) throw new ValidationError("O autor é obrigatório.")
+    if (!content) throw new ValidationError("O conteúdo é obrigatório.")
+    if (!category) throw new ValidationError("A categoria é obrigatória.")
+    if (!mainImage) throw new ValidationError("A imagem o é obrigatória.")
 
     try {
       if (highlighted) {
@@ -45,12 +55,8 @@ export class PostController {
 
       const postSlug = category.toLowerCase().replace(" ", "-")
 
-      if (!Types.ObjectId.isValid(author_id)) {
-        return res.status(400).json({
-          success: false,
-          message: "O id do usuário, não é um id válido.",
-        })
-      }
+      if (!Types.ObjectId.isValid(author_id))
+        throw new ValidationError("Id inválido.")
 
       const post = new PostModel({
         date,
@@ -68,11 +74,8 @@ export class PostController {
       })
 
       const user = await UserModel.findById({ _id: author_id })
-      if (!user) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Usuário não encontrado." })
-      }
+      if (!user) throw new NotFoundError("Usuário não encontrado.")
+
       await post.save()
       user.posts.push(post._id)
       await user?.save()
@@ -90,26 +93,26 @@ export class PostController {
         to: subsEmail,
         data: lastPosts,
         subject: "Newsletter",
-        from: "webmaster.overlandangola@aol.com",
+        from: WEBMASTER_EMAIL,
         template: "newsletter-posts-template.ejs",
       }
 
       await mailSend(data)
 
-      res
-        .status(201)
-        .json({ success: true, message: "O post foi criado com sucesso." })
+      res.status(201).json({ message: "Criado com sucesso." })
     } catch (error) {
-      res
-        .status(400)
-        .json({ success: false, erro: error, message: "Erro ao criar o post." })
+      next(error)
     }
   }
 
-  public static async getAllPosts(req: Request, res: Response) {
-    const page = parseInt(req.query.page as string, 10) || 1
-    const category = req.query.category
-    const limit = parseInt(req.query.limit as string) || 20
+  public static async getAllPosts(
+    req: Request<{}, {}, {}, PostQueryParams>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { category, limit: queryLimit, page: queryPage } = req.query
+    const page = parseInt(queryPage, 10) || 1
+    const limit = parseInt(queryLimit) || 20
     const skip = limit * (page - 1)
     const filter = category ? { category_slug: category } : {}
     const totalDocuments = await PostModel.countDocuments(filter)
@@ -126,70 +129,39 @@ export class PostController {
         })
       res.status(200).json({ total: totalDocuments, pages: totalPages, posts })
     } catch (error) {
-      console.error(error)
-      res.status(500).json({
-        err: "Erro no servidor, por favor tente novamente!",
-        message: error,
-      })
+      next(error)
     }
   }
 
   public static async getSinglePost(
     req: Request<{ id: string }>,
-    res: Response
+    res: Response,
+    next: NextFunction
   ) {
     try {
       const { id } = req.params
-      if (!Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ success: false, message: "Id inválido." })
-      }
+      if (!Types.ObjectId.isValid(id)) throw new ValidationError("Id inválido.")
+
       const post = await PostModel.findById(id).populate({
         path: "author",
         select: "_id firstname lastname image",
       })
 
-      if (!post) {
-        return res.status(404).json({
-          success: false,
-          message: "Não encontrado.",
-        })
-      }
+      if (!post) throw new NotFoundError("Não encontrado.")
 
       post.views += 1
       await post.save()
       res.status(200).json(post)
     } catch (error) {
-      res.status(404).json({
-        success: false,
-        message: "Erro ao tentar obter o post solicitado.",
-        erro: error,
-      })
+      next(error)
     }
   }
 
-  public static async getByCategory(
-    req: Request<{ category_slug: string }>,
-    res: Response
+  public static async getHighlightedPost(
+    req: Request,
+    res: Response,
+    next: NextFunction
   ) {
-    try {
-      const posts = await PostModel.find({
-        category_slug: req.params.category_slug,
-      })
-        .sort({ createdAt: -1 })
-        .populate({
-          path: "author",
-          select: "_id firstname lastname image",
-        })
-      return res.status(200).json(posts)
-    } catch (error) {
-      res.status(500).json({
-        err: error,
-        message: "Erro no servidor ao tentar obter os posts por categoria",
-      })
-    }
-  }
-
-  public static async getHighlightedPost(req: Request, res: Response) {
     try {
       const highlightedPosts = await PostModel.findOne({
         highlighted: true,
@@ -199,21 +171,19 @@ export class PostController {
       })
       res.status(200).json(highlightedPosts)
     } catch (error) {
-      res.status(500).json({ err: error })
+      next(error)
     }
   }
 
   public static async getUserPosts(
     req: Request<{ user_id: string }>,
-    res: Response
+    res: Response,
+    next: NextFunction
   ) {
     const { user_id } = req.params
 
-    if (!Types.ObjectId.isValid(user_id)) {
-      return res
-        .status(400)
-        .json({ message: "O id do usuário não é um id válido." })
-    }
+    if (!Types.ObjectId.isValid(user_id))
+      throw new ValidationError("Id inválido.")
 
     try {
       const posts = await PostModel.find({
@@ -227,16 +197,20 @@ export class PostController {
 
       return res.json(posts)
     } catch (error) {
-      return res.json(error)
+      next(error)
     }
   }
 
-  public static async getMostViewedPosts(req: Request, res: Response) {
+  public static async getMostViewedPosts(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const posts = await PostModel.find().sort({ views: -1 })
       return res.status(200).json(posts)
     } catch (error) {
-      return res.status(400).json({ err: error })
+      next(error)
     }
   }
 
@@ -260,44 +234,49 @@ export class PostController {
     }
   }
 
-  public static async deletePost(req: Request, res: Response) {
+  public static async deletePost(
+    req: Request<{ id: string }>,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const { id } = req.params
       const post = await PostModel.findById({ _id: id })
-      if (!post) {
-        res.status(400).json({
-          message: "Não foi possível deletar o post pois ele não existe",
-        })
-      }
+
+      if (!post) throw new NotFoundError("Não encontrado.")
+
       await PostModel.deleteOne({ _id: id })
-      res.status(200).json({ message: "O post foi deletado" })
+      res.status(200).json({ message: "Removido com sucesso." })
     } catch (error) {
-      res.status(404).json({ err: "Erro no servidor ao tentar apagar o post" })
+      next(error)
     }
   }
 
-  public static async updatePost(req: Request, res: Response) {
+  public static async updatePost(
+    req: Request<{ id: string }, {}, UpdatePostRequestDTO>,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const { id } = req.params
       const {
-        title,
-        content,
-        mainImage,
-        date,
-        category,
-        highlighted,
         tag,
+        date,
+        title,
+        category,
+        content,
         latitude,
         longitude,
-        author,
+        mainImage,
+        author_id,
+        highlighted,
         author_notes,
       } = req.body
+
       const postExists = await PostModel.findById(id)
-      if (!postExists) {
-        return res
-          .status(404)
-          .json({ message: "O post solicitado não existe!" })
-      }
+
+      if (!postExists) throw new ValidationError("Não encontrado.")
+
       if (highlighted) {
         const currentlyHighlighted = await PostModel.findOne({
           highlighted: true,
@@ -315,14 +294,14 @@ export class PostController {
         ? category.toLowerCase().replace(" ", "-")
         : postExists.category_slug
 
-      const newPost = await PostModel.findOneAndUpdate(
+      await PostModel.findOneAndUpdate(
         { _id: id },
         {
           tag: tag,
           date: date,
           title: title,
-          author: author,
           content: content,
+          author: author_id,
           category: category,
           latitude: latitude,
           category_slug: slug,
@@ -330,14 +309,11 @@ export class PostController {
           longitude: longitude,
           highlighted: highlighted,
           author_notes: author_notes,
-        },
-        { new: true }
+        }
       )
-      res.status(200).json({ message: "Post atualizado com sucesso", newPost })
+      res.status(200).json({ message: "Atualizado com sucesso" })
     } catch (error) {
-      res
-        .status(404)
-        .json({ err: "Erro no servidor ao tentar atualizar o post!: " + error })
+      next(error)
     }
   }
 
