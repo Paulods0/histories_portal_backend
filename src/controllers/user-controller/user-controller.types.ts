@@ -1,12 +1,11 @@
-import { Role } from "../../types"
-
+// import { Role } from "../../types"
 export type LoginRequestDTO = {
   email: string
   password: string
 }
 
 export type CreateUserRequestDTO = {
-  role: Role
+  role: "admin" | "store-manager" | "publicator"
   email: string
   image?: string
   lastname: string
