@@ -12,6 +12,8 @@ import { CommonError } from "../../middlewares/error/common-error"
 import { ValidationError } from "../../middlewares/error/validation"
 import { NotFoundError } from "../../middlewares/error/not-found-error"
 import { AuthenticationError } from "../../middlewares/error/authentication-error"
+import { sendMail } from "../../config/nodemailer"
+import { EmailProps, mailSend } from "../../helpers"
 
 export class UserController {
   public static async loginUser(
@@ -28,7 +30,7 @@ export class UserController {
         throw new ValidationError("Password é obrigatória")
       }
 
-      const user = await UserModel.findOne({ email }).populate("posts")
+      const user = await UserModel.findOne({ email: email }).populate("posts")
 
       if (!user) {
         throw new NotFoundError("Usuário não encontrado")
@@ -105,8 +107,37 @@ export class UserController {
         image: image,
         password: hashedPassword,
       })
-
       await user.save()
+
+      const roleInfo = {
+        admin:
+          "acesso total ao sistema, podendo gerenciar usuários, configurar permissões, e realizar qualquer ação administrativa necessária.",
+        storeManager:
+          "gerenciar a loja, o que inclui adicionar e atualizar produtos e monitorar o desempenho da loja.",
+        publisher:
+          "criar, editar e publicar conteúdo, garantindo que as informações disponíveis estejam sempre atualizados e de acordo com os padrões do Clube Overland.",
+      }
+
+      const emailProps: EmailProps = {
+        to: email,
+        data: {
+          role: user.role,
+          email: user.email,
+          password: password,
+          lastname: user.lastname,
+          firstname: user.firstname,
+          roleInfo:
+            user.role === "admin"
+              ? roleInfo.admin
+              : user.role === "store-manager"
+              ? roleInfo.storeManager
+              : roleInfo.publisher,
+        },
+        from: "pauloluguenda0@gmail.com",
+        template: "admin-welcome-template.ejs",
+        subject: "SEJA BEM-VINDO AO OVERLAND ANGOLA",
+      }
+      await mailSend(emailProps)
 
       return res.status(201).json({ message: "Usuário criado com sucesso." })
     } catch (error) {
@@ -174,13 +205,17 @@ export class UserController {
 
       const { firstname, lastname, image, role, email } = req.body
 
-      const newUser = await UserModel.findOneAndUpdate(
+      const updatedUser = await UserModel.findOneAndUpdate(
         { _id: id },
         { firstname, lastname, image, role, email },
         { new: true }
       )
 
-      return res.status(200).json(newUser)
+      if (!updatedUser) {
+        throw new NotFoundError("Usuário não encontrado")
+      }
+
+      return res.status(200).json(updatedUser)
     } catch (error) {
       next(error)
     }

@@ -14,8 +14,9 @@ import classifiedPostRoute from "./routes/classified-post-route"
 import { connectDB } from "./config/db"
 import globalErrorHandler from "./middlewares/global-error-handler"
 
-const PORT = process.env.PORT || 8181
+const PORT = process.env.PORT || 8080
 const app = express()
+
 dotenv.config({
   path:
     process.env.NODE_ENV === "production"

@@ -8,8 +8,9 @@ export type CreateProductRequestDTO = {
 }
 
 export type ProductQueryParams = {
-  category: string
-  page: string
+  page?: string
+  limit?: string
+  category?: string
 }
 
 export type UpdateProductRequestDTO = {

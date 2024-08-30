@@ -12,7 +12,8 @@ import { SubscriberModel } from "../../models/subscriber-model"
 import { ValidationError } from "../../middlewares/error/validation"
 import { NotFoundError } from "../../middlewares/error/not-found-error"
 
-export const WEBMASTER_EMAIL = "webmaster.overlandangola@aol.com"
+// export const WEBMASTER_EMAIL = "webmaster.overlandangola@aol.com"
+export const EMAIL_TEST = "pauloluguenda0@gmail.com"
 
 export class PostController {
   public static async createPost(
@@ -92,8 +93,9 @@ export class PostController {
       const data: EmailProps = {
         to: subsEmail,
         data: lastPosts,
-        subject: "Newsletter",
-        from: WEBMASTER_EMAIL,
+        from: EMAIL_TEST,
+        subject: "NEWSLETTER",
+        // from: WEBMASTER_EMAIL,
         template: "newsletter-posts-template.ejs",
       }
 

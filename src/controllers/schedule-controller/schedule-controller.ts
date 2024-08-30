@@ -38,15 +38,15 @@ export class ScheduleController {
   ) {
     const { page: queryPage } = req.query
     const page = parseInt(queryPage) || 1
-    const postPerPage = 2
-    const skip = postPerPage * (page - 1)
+    const limit = 20
+    const skip = limit * (page - 1)
 
     const totalPosts = await ScheduleModel.countDocuments()
-    const pages = Math.ceil(totalPosts / postPerPage)
+    const pages = Math.ceil(totalPosts / limit)
 
     try {
       const post = await ScheduleModel.find()
-        .limit(postPerPage)
+        .limit(limit)
         .skip(skip)
         .sort({ createdAt: -1 })
 

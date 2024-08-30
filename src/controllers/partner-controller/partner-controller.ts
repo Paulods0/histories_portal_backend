@@ -16,7 +16,8 @@ export class PartnerController {
     next: NextFunction
   ) {
     try {
-      const { author, content, image, title } = req.body
+      const { author, content, image, title, date, tags, author_notes } =
+        req.body
 
       if (!content) {
         throw new ValidationError("O conteúdo é obrigatório.")
@@ -30,7 +31,19 @@ export class PartnerController {
       if (!title) {
         throw new ValidationError("O título é obrigatório.")
       }
-      const partner = new PartnerModel({ title, content, image, author })
+      if (!date) {
+        throw new ValidationError("A data é obrigatória.")
+      }
+
+      const partner = new PartnerModel({
+        title,
+        content,
+        image,
+        author,
+        author_notes,
+        tags,
+        date,
+      })
       await partner.save()
 
       return res.status(201).json({ message: "Criado com sucesso" })
@@ -74,7 +87,10 @@ export class PartnerController {
       if (!Types.ObjectId.isValid(id)) {
         return res.status(400).json({ message: "Id inválido" })
       }
-      const partner = await PartnerModel.findById({ _id: id })
+      const partner = await PartnerModel.findById({ _id: id }).populate({
+        path: "author",
+        select: "-id firstname lastname",
+      })
       return res.status(200).json(partner)
     } catch (error) {
       return res.status(500).json({ message: error })
@@ -88,7 +104,8 @@ export class PartnerController {
   ) {
     try {
       const { id } = req.params
-      const { author, content, image, title } = req.body
+      const { author_notes, date, tags, author, content, image, title } =
+        req.body
 
       if (!Types.ObjectId.isValid(id)) {
         throw new ValidationError("Id inválido")
@@ -99,15 +116,16 @@ export class PartnerController {
         throw new NotFoundError("Id inválido")
       }
 
-      await existingPartner.updateOne(
-        {
-          title: title ?? existingPartner.title,
-          image: image ?? existingPartner.image,
-          author: author ?? existingPartner.author,
-          content: content ?? existingPartner.content,
-        },
-        { new: true }
-      )
+      await existingPartner.updateOne({
+        tags: tags ?? existingPartner.tags,
+        date: date ?? existingPartner.date,
+        title: title ?? existingPartner.title,
+        image: image ?? existingPartner.image,
+        author: author ?? existingPartner.author,
+        content: content ?? existingPartner.content,
+        author_notes: author_notes ?? existingPartner.author_notes,
+      })
+
       return res.status(200).json({ message: "Atualizado com sucesso" })
     } catch (error) {
       next(error)

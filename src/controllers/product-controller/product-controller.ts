@@ -1,6 +1,6 @@
 import {
-  CreateProductRequestDTO,
   ProductQueryParams,
+  CreateProductRequestDTO,
   UpdateProductRequestDTO,
 } from "./product-controller.types"
 import { Types } from "mongoose"
@@ -54,10 +54,10 @@ export class ProductController {
     res: Response,
     next: NextFunction
   ) {
-    const { category, page: queryPage } = req.query
-    const page = parseInt(queryPage) || 1
-    const limit = 2
-    const skip = limit * (page - 1)
+    const { category, page: queryPage, limit: queryLimit } = req.query
+    const page: number = queryPage ? parseInt(queryPage) : 1
+    const limit: number = queryLimit ? Number(queryLimit) : 20
+    const skip: number = limit * (page - 1)
 
     let filter = category ? { slug: category } : {}
 

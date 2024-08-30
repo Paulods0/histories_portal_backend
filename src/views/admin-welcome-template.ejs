@@ -39,8 +39,8 @@
                   "
                 >
                   <p>
-                    Olá, <span> <%= user.firstname %> </span>
-                    <span> <%= user.lastname %> </span>
+                    Olá, <span> <%= data.firstname %> </span>
+                    <span> <%= data.lastname %> </span>
                   </p>
 
                   <p style="color: black">
@@ -58,29 +58,29 @@
                   >
                     <li>
                       <strong>Email:</strong>
-                      <span> <%= user.email %> </span>
+                      <span> <%= data.email %> </span>
                     </li>
 
                     <li>
                       <strong>Password:</strong>
-                      <span> <%= user.password %> </span>
+                      <span> <%= data.password %> </span>
                     </li>
 
                     <li>
                       <strong>Role:</strong>
-                      <span> <%= user.role %> </span>
+                      <span> <%= data.role %> </span>
                     </li>
                   </ul>
                   <p>
                     <strong>NOTA:</strong> A role
-                    <strong> <%= user.role %> </strong> permite-lhe <%=
-                    user.roleInfo %>
+                    <strong> <%= data.role %> </strong> permite-lhe <%=
+                    data.roleInfo %>
                   </p>
                 </div>
               </td>
             </tr>
-            <%- include('./sections/explore-section.ejs') %> <%-
-            include('./section/footer-section.ejs') %>
+            <%- include('./sections/explore-section.ejs') %>
+            <%- include('./sections/footer-section.ejs') %>
           </table>
         </td>
       </tr>

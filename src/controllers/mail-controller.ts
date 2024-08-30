@@ -86,8 +86,8 @@ export class MailController {
           products: formatedProducts,
         },
         from: user.email,
-        // to: USER_EMAIL,
-        to: "pauloluguenda0@gmail.com",
+        to: USER_EMAIL,
+        // to: "pauloluguenda0@gmail.com",
         subject: "COMPRA DE ARTIGO(S)",
         template: "buy-product-email-template.ejs",
       }
