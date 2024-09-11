@@ -11,6 +11,7 @@ import { NextFunction, Request, Response } from "express"
 import { SubscriberModel } from "../../models/subscriber-model"
 import { ValidationError } from "../../middlewares/error/validation"
 import { NotFoundError } from "../../middlewares/error/not-found-error"
+import { SendEmailModel } from "../../models/send-email-model"
 
 // export const WEBMASTER_EMAIL = "webmaster.overlandangola@aol.com"
 export const EMAIL_TEST = "pauloluguenda0@gmail.com"
@@ -90,16 +91,20 @@ export class PostController {
         subsEmail.push(sub.email!!)
       })
 
-      const data: EmailProps = {
-        to: subsEmail,
-        data: lastPosts,
-        from: EMAIL_TEST,
-        subject: "NEWSLETTER",
-        // from: WEBMASTER_EMAIL,
-        template: "newsletter-posts-template.ejs",
-      }
+      const sendEmail = await SendEmailModel.findOne()
 
-      await mailSend(data)
+      if (sendEmail && sendEmail.canSendEmail) {
+        const data: EmailProps = {
+          to: subsEmail,
+          data: lastPosts,
+          from: EMAIL_TEST,
+          subject: "NEWSLETTER",
+          // from: WEBMASTER_EMAIL,
+          template: "newsletter-posts-template.ejs",
+        }
+
+        await mailSend(data)
+      }
 
       res.status(201).json({ message: "Criado com sucesso." })
     } catch (error) {

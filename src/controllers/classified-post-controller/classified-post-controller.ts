@@ -148,7 +148,7 @@ export class ClassifiedPostController {
   ) {
     try {
       const { id } = req.params
-      const { newStatus, images } = req.body
+      const { status, images } = req.body
 
       if (!Types.ObjectId.isValid(id)) {
         throw new ValidationError("Id inválido.")
@@ -159,7 +159,7 @@ export class ClassifiedPostController {
         throw new NotFoundError("Não encontrado.")
       }
 
-      await existingPost.updateOne({ status: newStatus, images: images })
+      await existingPost.updateOne({ status: status, images: images })
       return res.status(200).json({ message: "Atualizado com sucesso." })
     } catch (error) {
       next(error)

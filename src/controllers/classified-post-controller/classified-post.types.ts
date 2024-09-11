@@ -25,6 +25,6 @@ export type ClassifiedsQueryParams = {
 }
 
 export type UpdateClassifiedPostRequestDTO = {
-  newStatus?: string
+  status?: string
   images?: string[]
 }

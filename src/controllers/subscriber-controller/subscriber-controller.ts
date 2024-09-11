@@ -91,7 +91,9 @@ export class SubscriberController {
         .skip(skip)
         .sort({ createdAt: -1 })
 
-      return res.status(200).json({ pages: totalPages, subs: subscribers })
+      return res
+        .status(200)
+        .json({ pages: totalPages, subs: subscribers, total: totalDocs })
     } catch (error) {
       next(error)
     }
