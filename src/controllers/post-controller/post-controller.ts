@@ -82,11 +82,11 @@ export class PostController {
       user.posts.push(post._id)
       await user?.save()
 
-      const lastPosts = await PostModel.find().limit(3).sort({ createdAt: -1 })
+      const lastPosts = await PostModel.find().limit(3).sort({ _id: -1 })
 
       const subscribers = await SubscriberModel.find()
 
-      let subsEmail: string[] = [""]
+      let subsEmail: string[] = []
       subscribers.forEach((sub) => {
         subsEmail.push(sub.email!!)
       })
@@ -94,16 +94,19 @@ export class PostController {
       const sendEmail = await SendEmailModel.findOne()
 
       if (sendEmail && sendEmail.canSendEmail) {
-        const data: EmailProps = {
-          to: subsEmail,
-          data: lastPosts,
-          from: EMAIL_TEST,
-          subject: "NEWSLETTER",
-          // from: WEBMASTER_EMAIL,
-          template: "newsletter-posts-template.ejs",
+        try {
+          const data: EmailProps = {
+            to: subsEmail,
+            data: lastPosts,
+            from: EMAIL_TEST,
+            subject: "NEWSLETTER",
+            template: "newsletter-posts-template.ejs",
+          }
+          await mailSend(data)
+        } catch (emailError) {
+          console.error("Erro ao enviar email:", emailError)
+          // Opcional: criar uma entrada de log ou outro mecanismo de notificação
         }
-
-        await mailSend(data)
       }
 
       res.status(201).json({ message: "Criado com sucesso." })
