@@ -9,6 +9,7 @@ import partnerRoute from "./routes/partner-route"
 import productRoute from "./routes/product-route"
 import scheduleRoute from "./routes/schedule-route"
 import subscriberRoute from "./routes/subscriber-route"
+import partnerImageRoute from "./routes/partner-image-route"
 import classifiedPostRoute from "./routes/classified-post-route"
 
 import { connectDB } from "./config/db"
@@ -24,10 +25,7 @@ dotenv.config({
       : ".env.development",
 })
 
-const corsOptions = {
-  origin: "https://overlandangola.com",
-  optionsSuccessStatus: 200,
-}
+
 
 connectDB()
 app.use(express.json())
@@ -41,6 +39,7 @@ app.use("/api/v1/product", productRoute)
 app.use("/api/v1/partner", partnerRoute)
 app.use("/api/v1/newsletter", subscriberRoute)
 app.use("/api/v1/schedule-post", scheduleRoute)
+app.use("/api/v1/partner-image", partnerImageRoute)
 app.use("/api/v1/classified-post", classifiedPostRoute)
 
 app.use(globalErrorHandler)

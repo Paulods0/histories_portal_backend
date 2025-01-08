@@ -17,7 +17,7 @@ export class ProductController {
   ) {
     try {
       const { name, price, image, quantity, category, description } = req.body
-
+      
       if (!name) {
         throw new ValidationError("O nome é obrigatório.")
       }

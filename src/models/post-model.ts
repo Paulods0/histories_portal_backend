@@ -15,7 +15,6 @@ const Post = new Schema(
     author_notes: { type: String },
     longitude: { type: String },
     latitude: { type: String },
-    // coordinates: { type: String },
     tag: [{ type: String }],
   },
   { timestamps: true }
